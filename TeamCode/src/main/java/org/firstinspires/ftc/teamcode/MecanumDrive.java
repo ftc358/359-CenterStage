@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -94,6 +95,8 @@ public final class MecanumDrive {
             new ProfileAccelConstraint(PARAMS.minProfileAccel, PARAMS.maxProfileAccel);
 
     public final DcMotorEx leftFront, leftBack, rightBack, rightFront;
+    public final Servo claw1, claw2;
+    public final Servo intake1, intake2;
 
     public final VoltageSensor voltageSensor;
 
@@ -186,6 +189,17 @@ public final class MecanumDrive {
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        claw1 = hardwareMap.get(Servo.class,"claw1");
+        claw2 = hardwareMap.get(Servo.class,"claw2");
+
+        intake1 = hardwareMap.get(Servo.class,"intake1");
+        intake2 = hardwareMap.get(Servo.class,"intake2");
+
+        claw1.setDirection(Servo.Direction.REVERSE);
+
+        intake1.setDirection(Servo.Direction.REVERSE);
+
+
         imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
@@ -198,6 +212,38 @@ public final class MecanumDrive {
 
         FlightRecorder.write("MECANUM_PARAMS", PARAMS);
     }
+
+
+    public void clawGrab(boolean one,boolean two){
+        if (one && two){
+            //release both
+            claw1.setPosition(0.1);
+            claw2.setPosition(0.1);
+        }
+        else if (two) {
+            //release first
+            claw1.setPosition(0);
+        }
+        else if (!one && !two){
+            //close two
+            claw1.setPosition(0);
+            claw1.setPosition(0);
+        }
+    }
+
+    public void intakeFlip(boolean flip){
+        if (flip){
+            intake1.setPosition(0);
+            intake2.setPosition(0);
+        } else if (!flip) {
+            intake1.setPosition(0.5);
+            intake2.setPosition(0.5);
+
+        }
+
+    }
+
+
 
     public void setDrivePowers(PoseVelocity2d powers) {
         MecanumKinematics.WheelVelocities<Time> wheelVels = new MecanumKinematics(1).inverse(

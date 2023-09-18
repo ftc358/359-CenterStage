@@ -27,11 +27,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
+
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -50,15 +52,17 @@ import java.util.List;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
 @TeleOp(name = "Concept: AprilTag Switchable Cameras", group = "Concept")
-@Disabled
 public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
 
     /*
      * Variables used for switching cameras.
      */
     private WebcamName webcam1, webcam2;
+    private Servo claw1, claw2;
     private boolean oldLeftBumper;
     private boolean oldRightBumper;
+    private boolean zero;
+    private boolean one;
 
     /**
      * The variable to store our instance of the AprilTag processor.
@@ -72,7 +76,10 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        claw1 = hardwareMap.get(Servo.class, "claw1");
+        claw2 = hardwareMap.get(Servo.class, "claw2");
 
+        claw1.setDirection(Servo.Direction.REVERSE);
         initAprilTag();
 
         // Wait for the DS start button to be touched.
@@ -86,6 +93,8 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
 
                 telemetryCameraSwitching();
                 telemetryAprilTag();
+                telemetry.addData("claw1",gamepad1.left_trigger);//0.27
+                telemetry.addData("claw1",gamepad1.right_trigger);
 
                 // Push telemetry to the Driver Station.
                 telemetry.update();
@@ -97,12 +106,36 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
                     visionPortal.resumeStreaming();
                 }
 
+
+
+
+
+
+
+
+                if (gamepad1.a){
+                    claw1.setPosition(0.27);
+                }
+                if (gamepad1.b){
+                    claw1.setPosition(0);
+                }
+
+                if (gamepad1.x){
+                    GrabTwo();
+                }
+                if (gamepad1.y){
+                    claw2.setPosition(0);
+                }
                 doCameraSwitching();
 
                 // Share the CPU.
                 sleep(20);
+
+                //0.22 hold //0 release
+
             }
         }
+
 
         // Save more CPU resources when camera is no longer needed.
         visionPortal.close();
@@ -112,21 +145,34 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
     /**
      * Initialize the AprilTag processor.
      */
+    public void GrabTwo(){
+        claw1.setPosition(0.27);
+        claw2.setPosition(0.23);
+    }
+
+    public void releaseOne(boolean release){
+        claw1.setPosition(0);
+    }
+    public void releaseTwo(boolean release){
+        claw2.setPosition(0);
+    }
     private void initAprilTag() {
 
         // Create the AprilTag processor by using a builder.
         aprilTag = new AprilTagProcessor.Builder().build();
 
-        webcam1 = hardwareMap.get(WebcamName.class, "Webcam 1");
-        webcam2 = hardwareMap.get(WebcamName.class, "Webcam 2");
+        webcam1 = hardwareMap.get(WebcamName.class, "webcam1");
+        webcam2 = hardwareMap.get(WebcamName.class, "webcam2");
+
+
         CameraName switchableCamera = ClassFactory.getInstance()
-            .getCameraManager().nameForSwitchableCamera(webcam1, webcam2);
+                .getCameraManager().nameForSwitchableCamera(webcam1, webcam2);
 
         // Create the vision portal by using a builder.
         visionPortal = new VisionPortal.Builder()
-            .setCamera(switchableCamera)
-            .addProcessor(aprilTag)
-            .build();
+                .setCamera(switchableCamera)
+                .addProcessor(aprilTag)
+                .build();
 
     }   // end method initAprilTag()
 

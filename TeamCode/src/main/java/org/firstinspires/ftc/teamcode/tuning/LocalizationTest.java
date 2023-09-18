@@ -5,6 +5,8 @@ import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Twist2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.TankDrive;
@@ -39,6 +41,9 @@ public class LocalizationTest extends LinearOpMode {
             waitForStart();
 
             while (opModeIsActive()) {
+
+
+                drive.clawGrab();
                 drive.setDrivePowers(new PoseVelocity2d(
                         new Vector2d(
                                 -gamepad1.left_stick_y,
@@ -59,3 +64,4 @@ public class LocalizationTest extends LinearOpMode {
         }
     }
 }
+
