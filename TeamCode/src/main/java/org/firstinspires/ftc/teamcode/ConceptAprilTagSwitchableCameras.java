@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.drive.opmode;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -37,9 +37,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.VisionPortal.CameraState;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
@@ -58,7 +62,7 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
      * Variables used for switching cameras.
      */
     private WebcamName webcam1, webcam2;
-    private Servo claw1, claw2;
+    private Servo claw1, claw2,intake1,intake2;
     private boolean oldLeftBumper;
     private boolean oldRightBumper;
     private boolean zero;
@@ -78,9 +82,14 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
     public void runOpMode() {
         claw1 = hardwareMap.get(Servo.class, "claw1");
         claw2 = hardwareMap.get(Servo.class, "claw2");
+        intake1 = hardwareMap.get(Servo.class, "intake1");
+        intake2 = hardwareMap.get(Servo.class,"intake2");
 
         claw1.setDirection(Servo.Direction.REVERSE);
+        intake1.setDirection(Servo.Direction.REVERSE);
+
         initAprilTag();
+
 
         // Wait for the DS start button to be touched.
         telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
@@ -93,7 +102,7 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
 
                 telemetryCameraSwitching();
                 telemetryAprilTag();
-                telemetry.addData("claw1",gamepad1.left_trigger);//0.27
+                telemetry.addData("left",gamepad1.left_trigger);//0.27
                 telemetry.addData("claw1",gamepad1.right_trigger);
 
                 // Push telemetry to the Driver Station.
@@ -126,6 +135,23 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
                 if (gamepad1.y){
                     claw2.setPosition(0);
                 }
+
+
+                if (gamepad1.dpad_left){
+                    intake1.setPosition(0.08);
+                    intake2.setPosition(0.08);
+                }
+                else if (gamepad1.dpad_right){
+                    intake1.setPosition(0.727);
+                    intake2.setPosition(0.727);
+                }
+
+
+
+
+
+
+
                 doCameraSwitching();
 
                 // Share the CPU.
@@ -145,6 +171,13 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
     /**
      * Initialize the AprilTag processor.
      */
+    public void releaseOuter(){
+        claw2.setPosition(0);
+    }
+    public void releaseInner(){
+        claw1.setPosition(0);
+    }
+
     public void GrabTwo(){
         claw1.setPosition(0.27);
         claw2.setPosition(0.23);
@@ -239,4 +272,45 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
 
     }   // end method doCameraSwitching()
 
+
+
+    public static AprilTagLibrary getCenterStageTagLibrary()
+    {
+        return new AprilTagLibrary.Builder()
+                .addTag(1,"BlueAllianceLeft",
+                        2,new VectorF(60.25f, 41.41f,4f), DistanceUnit.INCH,
+                        new Quaternion(0.683f,-0.183f,0.183f,0.683f,0))
+                .addTag(2,"BlueAllianceCenter",
+                        2,new VectorF(60.25f, 35.41f,4f), DistanceUnit.INCH,
+                        new Quaternion(0.683f,-0.183f,0.183f,0.683f,0))
+                .addTag(3,"BlueAllianceRight",
+                        2,new VectorF(60.25f, 29.41f,4f), DistanceUnit.INCH,
+                        new Quaternion(0.683f,-0.183f,0.183f,0.683f,0))
+                .addTag(4,"BlueAllianceLeft",
+                        2,new VectorF(60.25f, -29.41f,4f), DistanceUnit.INCH,
+                        new Quaternion(0.683f,-0.183f,0.183f,0.683f,0))
+                .addTag(5,"BlueAllianceCenter",
+                        2,new VectorF(60.25f, -35.41f,4f), DistanceUnit.INCH,
+                        new Quaternion(0.683f,-0.183f,0.183f,0.683f,0))
+                .addTag(6,"BlueAllianceRight",
+                        2,new VectorF(60.25f, -41.41f,4f), DistanceUnit.INCH,
+                        new Quaternion(0.683f,-0.183f,0.183f,0.683f,0))
+                .addTag(7,"RedAudienceWallLarge",
+                        2,new VectorF(-70.25f, -40.625f,5.5f), DistanceUnit.INCH,
+                        new Quaternion(0.7071f,0,0,-7.071f,0))
+                .addTag(8,"RedAudienceWallSmall",
+                        2,new VectorF(-70.25f, -35.125f,4f), DistanceUnit.INCH,
+                        new Quaternion(0.7071f,0,0,-7.071f,0))
+                .addTag(9,"BlueAudienceWallSmall",
+                        2,new VectorF(-70.25f, 35.125f,4f), DistanceUnit.INCH,
+                        new Quaternion(0.7071f,0,0,-7.071f,0))
+                .addTag(10,"BlueAudienceWallLarge",
+                        2,new VectorF(-70.25f, 40.625f,5.5f), DistanceUnit.INCH,
+                        new Quaternion(0.7071f,0,0,-7.071f,0))
+                .build();
+
+    }
+
+
 }   // end class
+
