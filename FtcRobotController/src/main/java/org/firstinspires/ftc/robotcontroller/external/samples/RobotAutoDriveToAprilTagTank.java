@@ -114,8 +114,8 @@ public class RobotAutoDriveToAprilTagTank extends LinearOpMode
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must match the names assigned during the robot configuration.
         // step (using the FTC Robot Controller app on the phone).
-        leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
-        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+        leftDrive  = hardwareMap.get(DcMotor.class, "leftFront");
+        rightDrive = hardwareMap.get(DcMotor.class, "rightFront");
 
         // To drive forward, most robots need the motor on one side to be reversed because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.

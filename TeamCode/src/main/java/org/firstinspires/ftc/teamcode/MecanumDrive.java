@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.text.InputFilter;
-
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
@@ -98,8 +96,9 @@ public final class MecanumDrive {
             new ProfileAccelConstraint(PARAMS.minProfileAccel, PARAMS.maxProfileAccel);
 
     public final DcMotorEx leftFront, leftBack, rightBack, rightFront;
+    public final DcMotorEx lift1, lift2;
     public final Servo claw1, claw2;
-    public final Servo intake1, intake2;
+    public final Servo flip1, flip2;
 
     public final VoltageSensor voltageSensor;
 
@@ -186,22 +185,32 @@ public final class MecanumDrive {
         leftBack = hardwareMap.get(DcMotorEx.class, "leftBack");
         rightBack = hardwareMap.get(DcMotorEx.class, "rightBack");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+//        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+//        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        lift1 = hardwareMap.get(DcMotorEx.class, "lift1");
+        lift2 = hardwareMap.get(DcMotorEx.class, "lift2");
+        lift1.setDirection(DcMotorSimple.Direction.REVERSE);
+        lift2.setDirection(DcMotorSimple.Direction.REVERSE);
+        lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
         claw1 = hardwareMap.get(Servo.class,"claw1");
         claw2 = hardwareMap.get(Servo.class,"claw2");
-
-        intake1 = hardwareMap.get(Servo.class,"intake1");
-        intake2 = hardwareMap.get(Servo.class,"intake2");
-
         claw1.setDirection(Servo.Direction.REVERSE);
 
-        intake1.setDirection(Servo.Direction.REVERSE);
+        flip1 = hardwareMap.get(Servo.class,"flip1");
+        flip2 = hardwareMap.get(Servo.class,"flip2");
+        flip1.setDirection(Servo.Direction.REVERSE);
+
+
+
+
+
 
 
         imu = hardwareMap.get(IMU.class, "imu");
@@ -216,34 +225,64 @@ public final class MecanumDrive {
     }
 
 
-    public void clawGrab(boolean one,boolean two){
-        if (one && two){
-            //release both
-            claw1.setPosition(0.1);
-            claw2.setPosition(0.1);
+
+
+
+    //Claw Operations
+    public void releaseOuter() {
+        claw2.setPosition(0);
+    }
+
+    public void releaseInner() {
+        if ((claw2.getPosition()) != 0){ //If the outer claw isn't released, Release it.
+            releaseOuter();
         }
-        else if (two) {
-            //release first
-            claw1.setPosition(0);
-        }
-        else if (!one && !two){
-            //close two
-            claw1.setPosition(0);
+        else{
             claw1.setPosition(0);
         }
     }
 
-    public void intakeFlip(boolean flip){
-        if (flip){
-            intake1.setPosition(0);
-            intake2.setPosition(0);
-        } else if (!flip) {
-            intake1.setPosition(0.5);
-            intake2.setPosition(0.5);
 
-        }
-
+    public void clawGrabInner() {
+        claw1.setPosition(0.27);
     }
+
+    public void clawGrabTwo() {
+        claw1.setPosition(0.27);
+        claw2.setPosition(0.23);
+    }
+
+    //Flip Operations
+    public boolean flipToggle = false; //Run this once during Init
+    public void flippy(){
+        if (flipToggle){//out
+            flip1.setPosition(0);
+            flip1.setPosition(0);
+        }
+        else if (!flipToggle){//in
+            flip1.setPosition(0.5);
+            flip1.setPosition(0.5);
+        }
+        flipToggle = !flipToggle;
+    }
+
+
+
+
+
+
+    public void Zero(Servo subject){
+        subject.setPosition(0);
+    }
+
+
+
+
+
+
+
+
+
 
 
 

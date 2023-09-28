@@ -61,8 +61,8 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
     /*
      * Variables used for switching cameras.
      */
-    private WebcamName webcam1, webcam2;
-    private Servo claw1, claw2,intake1,intake2;
+//    private WebcamName webcam1, webcam2;
+    private Servo claw1, claw2, intake1, intake2;
     private boolean oldLeftBumper;
     private boolean oldRightBumper;
     private boolean zero;
@@ -82,8 +82,8 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
     public void runOpMode() {
         claw1 = hardwareMap.get(Servo.class, "claw1");
         claw2 = hardwareMap.get(Servo.class, "claw2");
-        intake1 = hardwareMap.get(Servo.class, "intake1");
-        intake2 = hardwareMap.get(Servo.class,"intake2");
+        intake1 = hardwareMap.get(Servo.class, "flip1");
+        intake2 = hardwareMap.get(Servo.class, "flip2");
 
         claw1.setDirection(Servo.Direction.REVERSE);
         intake1.setDirection(Servo.Direction.REVERSE);
@@ -99,11 +99,11 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
-
-                telemetryCameraSwitching();
-                telemetryAprilTag();
-                telemetry.addData("left",gamepad1.left_trigger);//0.27
-                telemetry.addData("claw1",gamepad1.right_trigger);
+//
+//                telemetryCameraSwitching();
+//                telemetryAprilTag();
+                telemetry.addData("left", gamepad1.left_trigger);//0.27
+                telemetry.addData("claw1", gamepad1.right_trigger);
 
                 // Push telemetry to the Driver Station.
                 telemetry.update();
@@ -116,43 +116,43 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
                 }
 
 
+                if (gamepad2.left_bumper) {
+                    intake1.setPosition(0);
+                    intake2.setPosition(0);
+                }
+
+                if (gamepad2.right_bumper) {
+                    intake1.setPosition(1);
+                    intake2.setPosition(1);
+                }
 
 
-
-
-
-
-                if (gamepad1.a){
+                if (gamepad1.a) {
                     claw1.setPosition(0.27);
                 }
-                if (gamepad1.b){
+                if (gamepad1.b) {
                     claw1.setPosition(0);
                 }
 
-                if (gamepad1.x){
+                if (gamepad1.x) {
                     GrabTwo();
                 }
-                if (gamepad1.y){
+                if (gamepad1.y) {
                     claw2.setPosition(0);
                 }
 
 
-                if (gamepad1.dpad_left){
+                if (gamepad1.dpad_left) {
                     intake1.setPosition(0.08);
                     intake2.setPosition(0.08);
-                }
-                else if (gamepad1.dpad_right){
+                } else if (gamepad1.dpad_right) {
                     intake1.setPosition(0.727);
                     intake2.setPosition(0.727);
                 }
 
 
-
-
-
-
-
-                doCameraSwitching();
+//
+//                doCameraSwitching();
 
                 // Share the CPU.
                 sleep(20);
@@ -171,146 +171,150 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
     /**
      * Initialize the AprilTag processor.
      */
-    public void releaseOuter(){
+    public void releaseOuter() {
         claw2.setPosition(0);
     }
-    public void releaseInner(){
+
+    public void releaseInner() {
         claw1.setPosition(0);
     }
 
-    public void GrabTwo(){
+    public void GrabTwo() {
         claw1.setPosition(0.27);
         claw2.setPosition(0.23);
     }
 
-    public void releaseOne(boolean release){
+    public void releaseOne(boolean release) {
         claw1.setPosition(0);
     }
-    public void releaseTwo(boolean release){
+
+    public void releaseTwo(boolean release) {
         claw2.setPosition(0);
     }
+
     private void initAprilTag() {
 
         // Create the AprilTag processor by using a builder.
         aprilTag = new AprilTagProcessor.Builder().build();
+//
+//        webcam1 = hardwareMap.get(WebcamName.class, "webcam1");
+//        webcam2 = hardwareMap.get(WebcamName.class, "webcam2");
 
-        webcam1 = hardwareMap.get(WebcamName.class, "webcam1");
-        webcam2 = hardwareMap.get(WebcamName.class, "webcam2");
+//
+//        CameraName switchableCamera = ClassFactory.getInstance()
+//                .getCameraManager().nameForSwitchableCamera(webcam1, webcam2);
+//
+//        // Create the vision portal by using a builder.
+//        visionPortal = new VisionPortal.Builder()
+//                .setCamera(switchableCamera)
+//                .addProcessor(aprilTag)
+//                .build();
+//
+//    }   // end method initAprilTag()
+
+        /**
+         * Add telemetry about camera switching.
+         */
+//    private void telemetryCameraSwitching() {
+//
+//        if (visionPortal.getActiveCamera().equals(webcam1)) {
+//            telemetry.addData("activeCamera", "Webcam 1");
+//            telemetry.addData("Press RightBumper", "to switch to Webcam 2");
+//        } else {
+//            telemetry.addData("activeCamera", "Webcam 2");
+//            telemetry.addData("Press LeftBumper", "to switch to Webcam 1");
+//        }
+//
+//    }   // end method telemetryCameraSwitching()
+
+        /**
+         * Add telemetry about AprilTag detections.
+         */
+//    private void telemetryAprilTag() {
+//
+//        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+//        telemetry.addData("# AprilTags Detected", currentDetections.size());
+//
+//        // Step through the list of detections and display info for each one.
+//        for (AprilTagDetection detection : currentDetections) {
+//            if (detection.metadata != null) {
+//                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
+//                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+//                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
+//                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
+//            } else {
+//                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
+//                telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
+//            }
+//        }   // end for() loop
+//
+//        // Add "key" information to telemetry
+//        telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
+//        telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
+//        telemetry.addLine("RBE = Range, Bearing & Elevation");
+//
+//    }   // end method telemetryAprilTag()
+//
+//    /**
+//     * Set the active camera according to input from the gamepad.
+//     */
+//    private void doCameraSwitching() {
+//        if (visionPortal.getCameraState() == CameraState.STREAMING) {
+//            // If the left bumper is pressed, use Webcam 1.
+//            // If the right bumper is pressed, use Webcam 2.
+//            boolean newLeftBumper = gamepad1.left_bumper;
+//            boolean newRightBumper = gamepad1.right_bumper;
+//            if (newLeftBumper && !oldLeftBumper) {
+//                visionPortal.setActiveCamera(webcam1);
+//            } else if (newRightBumper && !oldRightBumper) {
+//                visionPortal.setActiveCamera(webcam2);
+//            }
+//            oldLeftBumper = newLeftBumper;
+//            oldRightBumper = newRightBumper;
+//        }
+//
+//    }   // end method doCameraSwitching()
+//
+//
+//
+//    public static AprilTagLibrary getCenterStageTagLibrary()
+//    {
+//        return new AprilTagLibrary.Builder()
+//                .addTag(1,"BlueAllianceLeft",
+//                        2,new VectorF(60.25f, 41.41f,4f), DistanceUnit.INCH,
+//                        new Quaternion(0.683f,-0.183f,0.183f,0.683f,0))
+//                .addTag(2,"BlueAllianceCenter",
+//                        2,new VectorF(60.25f, 35.41f,4f), DistanceUnit.INCH,
+//                        new Quaternion(0.683f,-0.183f,0.183f,0.683f,0))
+//                .addTag(3,"BlueAllianceRight",
+//                        2,new VectorF(60.25f, 29.41f,4f), DistanceUnit.INCH,
+//                        new Quaternion(0.683f,-0.183f,0.183f,0.683f,0))
+//                .addTag(4,"BlueAllianceLeft",
+//                        2,new VectorF(60.25f, -29.41f,4f), DistanceUnit.INCH,
+//                        new Quaternion(0.683f,-0.183f,0.183f,0.683f,0))
+//                .addTag(5,"BlueAllianceCenter",
+//                        2,new VectorF(60.25f, -35.41f,4f), DistanceUnit.INCH,
+//                        new Quaternion(0.683f,-0.183f,0.183f,0.683f,0))
+//                .addTag(6,"BlueAllianceRight",
+//                        2,new VectorF(60.25f, -41.41f,4f), DistanceUnit.INCH,
+//                        new Quaternion(0.683f,-0.183f,0.183f,0.683f,0))
+//                .addTag(7,"RedAudienceWallLarge",
+//                        2,new VectorF(-70.25f, -40.625f,5.5f), DistanceUnit.INCH,
+//                        new Quaternion(0.7071f,0,0,-7.071f,0))
+//                .addTag(8,"RedAudienceWallSmall",
+//                        2,new VectorF(-70.25f, -35.125f,4f), DistanceUnit.INCH,
+//                        new Quaternion(0.7071f,0,0,-7.071f,0))
+//                .addTag(9,"BlueAudienceWallSmall",
+//                        2,new VectorF(-70.25f, 35.125f,4f), DistanceUnit.INCH,
+//                        new Quaternion(0.7071f,0,0,-7.071f,0))
+//                .addTag(10,"BlueAudienceWallLarge",
+//                        2,new VectorF(-70.25f, 40.625f,5.5f), DistanceUnit.INCH,
+//                        new Quaternion(0.7071f,0,0,-7.071f,0))
+//                .build();
+//
+//    }
 
 
-        CameraName switchableCamera = ClassFactory.getInstance()
-                .getCameraManager().nameForSwitchableCamera(webcam1, webcam2);
-
-        // Create the vision portal by using a builder.
-        visionPortal = new VisionPortal.Builder()
-                .setCamera(switchableCamera)
-                .addProcessor(aprilTag)
-                .build();
-
-    }   // end method initAprilTag()
-
-    /**
-     * Add telemetry about camera switching.
-     */
-    private void telemetryCameraSwitching() {
-
-        if (visionPortal.getActiveCamera().equals(webcam1)) {
-            telemetry.addData("activeCamera", "Webcam 1");
-            telemetry.addData("Press RightBumper", "to switch to Webcam 2");
-        } else {
-            telemetry.addData("activeCamera", "Webcam 2");
-            telemetry.addData("Press LeftBumper", "to switch to Webcam 1");
-        }
-
-    }   // end method telemetryCameraSwitching()
-
-    /**
-     * Add telemetry about AprilTag detections.
-     */
-    private void telemetryAprilTag() {
-
-        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        telemetry.addData("# AprilTags Detected", currentDetections.size());
-
-        // Step through the list of detections and display info for each one.
-        for (AprilTagDetection detection : currentDetections) {
-            if (detection.metadata != null) {
-                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
-                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
-                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
-                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
-            } else {
-                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
-                telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
-            }
-        }   // end for() loop
-
-        // Add "key" information to telemetry
-        telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
-        telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
-        telemetry.addLine("RBE = Range, Bearing & Elevation");
-
-    }   // end method telemetryAprilTag()
-
-    /**
-     * Set the active camera according to input from the gamepad.
-     */
-    private void doCameraSwitching() {
-        if (visionPortal.getCameraState() == CameraState.STREAMING) {
-            // If the left bumper is pressed, use Webcam 1.
-            // If the right bumper is pressed, use Webcam 2.
-            boolean newLeftBumper = gamepad1.left_bumper;
-            boolean newRightBumper = gamepad1.right_bumper;
-            if (newLeftBumper && !oldLeftBumper) {
-                visionPortal.setActiveCamera(webcam1);
-            } else if (newRightBumper && !oldRightBumper) {
-                visionPortal.setActiveCamera(webcam2);
-            }
-            oldLeftBumper = newLeftBumper;
-            oldRightBumper = newRightBumper;
-        }
-
-    }   // end method doCameraSwitching()
-
-
-
-    public static AprilTagLibrary getCenterStageTagLibrary()
-    {
-        return new AprilTagLibrary.Builder()
-                .addTag(1,"BlueAllianceLeft",
-                        2,new VectorF(60.25f, 41.41f,4f), DistanceUnit.INCH,
-                        new Quaternion(0.683f,-0.183f,0.183f,0.683f,0))
-                .addTag(2,"BlueAllianceCenter",
-                        2,new VectorF(60.25f, 35.41f,4f), DistanceUnit.INCH,
-                        new Quaternion(0.683f,-0.183f,0.183f,0.683f,0))
-                .addTag(3,"BlueAllianceRight",
-                        2,new VectorF(60.25f, 29.41f,4f), DistanceUnit.INCH,
-                        new Quaternion(0.683f,-0.183f,0.183f,0.683f,0))
-                .addTag(4,"BlueAllianceLeft",
-                        2,new VectorF(60.25f, -29.41f,4f), DistanceUnit.INCH,
-                        new Quaternion(0.683f,-0.183f,0.183f,0.683f,0))
-                .addTag(5,"BlueAllianceCenter",
-                        2,new VectorF(60.25f, -35.41f,4f), DistanceUnit.INCH,
-                        new Quaternion(0.683f,-0.183f,0.183f,0.683f,0))
-                .addTag(6,"BlueAllianceRight",
-                        2,new VectorF(60.25f, -41.41f,4f), DistanceUnit.INCH,
-                        new Quaternion(0.683f,-0.183f,0.183f,0.683f,0))
-                .addTag(7,"RedAudienceWallLarge",
-                        2,new VectorF(-70.25f, -40.625f,5.5f), DistanceUnit.INCH,
-                        new Quaternion(0.7071f,0,0,-7.071f,0))
-                .addTag(8,"RedAudienceWallSmall",
-                        2,new VectorF(-70.25f, -35.125f,4f), DistanceUnit.INCH,
-                        new Quaternion(0.7071f,0,0,-7.071f,0))
-                .addTag(9,"BlueAudienceWallSmall",
-                        2,new VectorF(-70.25f, 35.125f,4f), DistanceUnit.INCH,
-                        new Quaternion(0.7071f,0,0,-7.071f,0))
-                .addTag(10,"BlueAudienceWallLarge",
-                        2,new VectorF(-70.25f, 40.625f,5.5f), DistanceUnit.INCH,
-                        new Quaternion(0.7071f,0,0,-7.071f,0))
-                .build();
-
-    }
-
-
-}   // end class
+    }   // end class}
+}
 

@@ -2,48 +2,21 @@ package org.firstinspires.ftc.teamcode.tuning;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.Twist2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.TankDrive;
 import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-import java.util.List;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Servo;
+public class LocalizationTestBackup extends LinearOpMode {
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.VisionPortal.CameraState;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-
-import java.util.List;
-
-public class LocalizationTest extends LinearOpMode {
-
+    private WebcamName webcam1, webcam2;
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
     private boolean oldLeftBumper;
@@ -68,17 +41,16 @@ public class LocalizationTest extends LinearOpMode {
 
 
             waitForStart();
-//
-//            webcam1 = hardwareMap.get(WebcamName.class, "webcam1"); //This is duplicated in comp. to init(). Please dont crash.
-//            webcam2 = hardwareMap.get(WebcamName.class, "webcam2");
+            webcam1 = hardwareMap.get(WebcamName.class, "webcam1"); //This is duplicated in comp. to init(). Please dont crash.
+            webcam2 = hardwareMap.get(WebcamName.class, "webcam2");
 
             while (opModeIsActive()) {
                 drive.setDrivePowers(new PoseVelocity2d(
                         new Vector2d(
-                                (-gamepad1.right_stick_x), //Fix this tomorrow
-                                (-gamepad1.left_stick_y)
+                                (-gamepad1.left_stick_y),
+                                -(gamepad1.left_stick_x)
                         ),
-                        -gamepad1.left_stick_x
+                        -gamepad1.right_stick_x
                 ));
 
                 drive.updatePoseEstimate();
@@ -110,34 +82,6 @@ public class LocalizationTest extends LinearOpMode {
 //                visionPortal.close();
 
 
-                if (gamepad1.a){
-                    drive.flippy();
-                }
-
-                if (gamepad1.b){
-                    drive.clawGrabInner();
-                }
-                if (gamepad1.x){
-                    drive.clawGrabTwo();
-                }
-
-                if (gamepad1.y){
-                    drive.releaseInner();
-                }
-
-                if (gamepad1.left_trigger>0){
-                    drive.lift1.setPower(gamepad1.left_trigger);
-                    drive.lift2.setPower(gamepad1.left_trigger);
-                }
-                if (gamepad1.left_trigger==0 && !gamepad1.left_bumper){
-                    drive.lift1.setPower(0.09);
-                    drive.lift2.setPower(0.05);
-                }
-
-                if (gamepad1.left_bumper){
-                    drive.lift1.setPower(-0.6);
-                    drive.lift2.setPower(-0.6);
-                }
 
             }
         } else {
@@ -154,7 +98,6 @@ public class LocalizationTest extends LinearOpMode {
 //
 //        webcam1 = hardwareMap.get(WebcamName.class, "webcam1");
 //        webcam2 = hardwareMap.get(WebcamName.class, "webcam2");
-//
 //
 //
 //        CameraName switchableCamera = ClassFactory.getInstance()
@@ -227,9 +170,6 @@ public class LocalizationTest extends LinearOpMode {
 //        }
 //
 //    }
-
-
-
 
     public static AprilTagLibrary getCenterStageTagLibrary()
     {
