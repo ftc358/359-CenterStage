@@ -6,10 +6,12 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.LastKnown;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 @Autonomous
+@Config
 public class jonathansopmode extends LinearOpMode {
 
     DcMotorEx motor;
@@ -31,17 +33,23 @@ public class jonathansopmode extends LinearOpMode {
         motor = hardwareMap.get(DcMotorEx.class, "lift1");
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        //motor2 = hardwareMap.get(DcMotorEx.class, "lift2");
-        //motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //motor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        motor2 = hardwareMap.get(DcMotorEx.class, "lift2");
+        motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motor.setDirection(DcMotorSimple.Direction.REVERSE);
+        motor2.setDirection(DcMotorSimple.Direction.REVERSE);
         waitForStart();
-        
+
         while (opModeIsActive()){
             double power = PID(targetPosition, motor.getCurrentPosition());
             packet.put("power", power);
             packet.put("position", motor.getCurrentPosition());
             packet.put("error", lastError);
             motor.setPower(power);
+            motor2.setPower(power);
             dashboard.sendTelemetryPacket(packet);
             //goToPositionIntakeSlides(timer,Kp,Ki,Kd,targetPosition);
         }
