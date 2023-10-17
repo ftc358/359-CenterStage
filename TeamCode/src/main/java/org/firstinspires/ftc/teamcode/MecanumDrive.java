@@ -196,6 +196,21 @@ public final class MecanumDrive {
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+
+
+
+        intake = hardwareMap.get(DcMotor.class,"intake");
+        flip1 = hardwareMap.get(Servo.class,"flip1");
+        flip2 = hardwareMap.get(Servo.class,"flip2");
+        ext1 = hardwareMap.get(Servo.class,"ext1");
+        ext2 = hardwareMap.get(Servo.class,"ext2");
+
+        flip2.setDirection(Servo.Direction.REVERSE);
+        ext2.setDirection(Servo.Direction.REVERSE);
+
+/*
+
+
         lift1 = hardwareMap.get(DcMotorEx.class, "lift1");
         lift2 = hardwareMap.get(DcMotorEx.class, "lift2");
         lift1.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -242,6 +257,8 @@ public final class MecanumDrive {
 
 
 
+
+ */
 
     public void setDrivePowers(PoseVelocity2d powers) {
         MecanumKinematics.WheelVelocities<Time> wheelVels = new MecanumKinematics(1).inverse(

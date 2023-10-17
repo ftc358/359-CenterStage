@@ -110,7 +110,6 @@ public class LocalizationTest extends LinearOpMode {
 //                visionPortal.close();
 
 
-
             }
         } else {
             throw new AssertionError();
