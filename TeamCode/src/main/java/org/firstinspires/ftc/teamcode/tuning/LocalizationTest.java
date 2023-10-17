@@ -110,34 +110,6 @@ public class LocalizationTest extends LinearOpMode {
 //                visionPortal.close();
 
 
-                if (gamepad1.a){
-                    drive.flippy();
-                }
-
-                if (gamepad1.b){
-                    drive.clawGrabInner();
-                }
-                if (gamepad1.x){
-                    drive.clawGrabTwo();
-                }
-
-                if (gamepad1.y){
-                    drive.releaseInner();
-                }
-
-                if (gamepad1.left_trigger>0){
-                    drive.lift1.setPower(gamepad1.left_trigger);
-                    drive.lift2.setPower(gamepad1.left_trigger);
-                }
-                if (gamepad1.left_trigger==0 && !gamepad1.left_bumper){
-                    drive.lift1.setPower(0.09);
-                    drive.lift2.setPower(0.05);
-                }
-
-                if (gamepad1.left_bumper){
-                    drive.lift1.setPower(-0.6);
-                    drive.lift2.setPower(-0.6);
-                }
 
             }
         } else {

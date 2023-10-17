@@ -96,9 +96,11 @@ public final class MecanumDrive {
             new ProfileAccelConstraint(PARAMS.minProfileAccel, PARAMS.maxProfileAccel);
 
     public final DcMotorEx leftFront, leftBack, rightBack, rightFront;
-    public final DcMotorEx lift1, lift2;
-    public final Servo claw1, claw2;
-    public final Servo flip1, flip2;
+    public DcMotorEx lift1, lift2;
+    public DcMotor intake;
+    public Servo claw1, claw2;
+    public Servo flip1, flip2, ext1, ext2;
+
 
     public final VoltageSensor voltageSensor;
 
@@ -186,8 +188,8 @@ public final class MecanumDrive {
         rightBack = hardwareMap.get(DcMotorEx.class, "rightBack");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
 
-//        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-//        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -201,18 +203,22 @@ public final class MecanumDrive {
         lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
+        intake = hardwareMap.get(DcMotor.class,"intake");
+
         claw1 = hardwareMap.get(Servo.class,"claw1");
         claw2 = hardwareMap.get(Servo.class,"claw2");
         claw1.setDirection(Servo.Direction.REVERSE);
 
+
         flip1 = hardwareMap.get(Servo.class,"flip1");
         flip2 = hardwareMap.get(Servo.class,"flip2");
+//        flip2.setDirection(Servo.Direction.REVERSE);
         flip1.setDirection(Servo.Direction.REVERSE);
+        flip2.setDirection(Servo.Direction.FORWARD);
 
-
-
-
-
+        ext1 = hardwareMap.get(Servo.class,"ext1");
+        ext2 = hardwareMap.get(Servo.class,"ext2");
+        ext2.setDirection(Servo.Direction.REVERSE);
 
 
         imu = hardwareMap.get(IMU.class, "imu");
@@ -224,57 +230,6 @@ public final class MecanumDrive {
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         localizer = new ThreeDeadWheelLocalizer(hardwareMap, PARAMS.inPerTick);
-    }
-
-
-
-
-
-    //Claw Operations
-    public void releaseOuter() {
-        claw2.setPosition(0);
-    }
-
-    public void releaseInner() {
-        if ((claw2.getPosition()) != 0){ //If the outer claw isn't released, Release it.
-            releaseOuter();
-        }
-        else{
-            claw1.setPosition(0);
-        }
-    }
-
-
-    public void clawGrabInner() {
-        claw1.setPosition(0.27);
-    }
-
-    public void clawGrabTwo() {
-        claw1.setPosition(0.27);
-        claw2.setPosition(0.23);
-    }
-
-    //Flip Operations
-    public boolean flipToggle = false; //Run this once during Init
-    public void flippy(){
-        if (flipToggle){//out
-            flip1.setPosition(0);
-            flip1.setPosition(0);
-        }
-        else if (!flipToggle){//in
-            flip1.setPosition(0.5);
-            flip1.setPosition(0.5);
-        }
-        flipToggle = !flipToggle;
-    }
-
-
-
-
-
-
-    public void Zero(Servo subject){
-        subject.setPosition(0);
     }
 
 
