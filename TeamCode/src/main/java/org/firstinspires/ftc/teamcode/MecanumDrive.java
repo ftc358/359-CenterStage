@@ -96,9 +96,11 @@ public final class MecanumDrive {
             new ProfileAccelConstraint(PARAMS.minProfileAccel, PARAMS.maxProfileAccel);
 
     public final DcMotorEx leftFront, leftBack, rightBack, rightFront;
-    public final DcMotorEx lift1, lift2;
-    public final Servo claw1, claw2;
-    public final Servo flip1, flip2;
+    public Servo flip1,flip2,ext1,ext2;
+    public DcMotor intake;
+    //public final DcMotorEx lift1, lift2;
+    //public final Servo claw1, claw2;
+    //public final Servo flip1, flip2;
 
     public final VoltageSensor voltageSensor;
 
@@ -186,13 +188,28 @@ public final class MecanumDrive {
         rightBack = hardwareMap.get(DcMotorEx.class, "rightBack");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
 
-//        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-//        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+
+
+
+        intake = hardwareMap.get(DcMotor.class,"intake");
+        flip1 = hardwareMap.get(Servo.class,"flip1");
+        flip2 = hardwareMap.get(Servo.class,"flip2");
+        ext1 = hardwareMap.get(Servo.class,"ext1");
+        ext2 = hardwareMap.get(Servo.class,"ext2");
+
+        flip2.setDirection(Servo.Direction.REVERSE);
+        ext2.setDirection(Servo.Direction.REVERSE);
+
+/*
+
 
         lift1 = hardwareMap.get(DcMotorEx.class, "lift1");
         lift2 = hardwareMap.get(DcMotorEx.class, "lift2");
@@ -201,7 +218,9 @@ public final class MecanumDrive {
         lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        claw1 = hardwareMap.get(Servo.class,"claw1");
+
+ */
+        /*claw1 = hardwareMap.get(Servo.class,"claw1");
         claw2 = hardwareMap.get(Servo.class,"claw2");
         claw1.setDirection(Servo.Direction.REVERSE);
 
@@ -210,6 +229,8 @@ public final class MecanumDrive {
         flip1.setDirection(Servo.Direction.REVERSE);
 
 
+
+         */
 
 
 
@@ -229,7 +250,7 @@ public final class MecanumDrive {
 
 
 
-
+/*
     //Claw Operations
     public void releaseOuter() {
         claw2.setPosition(0);
@@ -287,6 +308,8 @@ public final class MecanumDrive {
 
 
 
+
+ */
 
     public void setDrivePowers(PoseVelocity2d powers) {
         MecanumKinematics.WheelVelocities<Time> wheelVels = new MecanumKinematics(1).inverse(

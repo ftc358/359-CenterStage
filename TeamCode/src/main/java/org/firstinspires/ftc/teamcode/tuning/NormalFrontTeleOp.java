@@ -14,6 +14,17 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 public class NormalFrontTeleOp extends LinearOpMode {
+    public static double flip_zer = 0;
+    public static double flip_one = 0.15;
+    public static double flip_two = 0.3;
+
+    public float ext_past;
+    public float rapidTrigger_thr = 0.0727f;
+    public float extension_sens = 0.727f; //tune for extension sensitivity
+
+    public float dead_zone_prelim = 0.1f;
+    public float dead_zone_second = 0.3f;
+
 
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
@@ -36,7 +47,7 @@ public class NormalFrontTeleOp extends LinearOpMode {
 
 
 
-
+            ext_past = 0;
 
             waitForStart();
 //
@@ -57,58 +68,53 @@ public class NormalFrontTeleOp extends LinearOpMode {
                 telemetry.addData("y", drive.pose.position.y);
                 telemetry.addData("heading", drive.pose.heading);
 
+                //extension stuff
+                if ((gamepad1.right_trigger >= 0.1)){
+                    drive.ext1.setPosition((1.0 - extension_sens + gamepad1.right_trigger*extension_sens)*0.359);
+                    drive.ext2.setPosition((1.0 - extension_sens + gamepad1.right_trigger*extension_sens)*0.359);
+                }
+                else{
+                    drive.ext1.setPosition(0);
+                    drive.ext2.setPosition(0);
+                }
+
+                //bucket flip stuff
+                if (gamepad1.right_trigger <= dead_zone_prelim){
+                    drive.flip1.setPosition(flip_zer);
+                    drive.flip2.setPosition(flip_zer);
+                }
+
+                else if (gamepad1.right_trigger <= dead_zone_second){
+                    drive.flip1.setPosition(flip_two);
+                    drive.flip2.setPosition(flip_two);
+                }
 
 
-//                telemetryCameraSwitching();
-//                telemetryAprilTag();
+                else if ((gamepad1.right_trigger - ext_past) > 0){
+                    //extension trigger
+                    drive.flip1.setPosition(flip_one);
+                    drive.flip2.setPosition(flip_one);
+                }
+                else if ((ext_past - gamepad1.right_trigger) > rapidTrigger_thr){
+                    //extension retract
+                    drive.flip1.setPosition(flip_zer);
+                    drive.flip2.setPosition(flip_zer);
+                }
+                ext_past = gamepad1.right_trigger;
 
-                // Push telemetry to the Driver Station.
+                if (gamepad1.right_trigger>0){
+                    drive.intake.setPower(0.8);
+                } else if (gamepad1.right_bumper) {
+                    drive.intake.setPower(-1);
+                } else{
+                    drive.intake.setPower(0);
+                }
+
+
+
+
                 telemetry.update();
-
-//                // Save CPU resources; can resume streaming when needed.
-//                if (gamepad2.dpad_down) {
-//                    visionPortal.stopStreaming();
-//                } else if (gamepad2.dpad_up) {
-//                    visionPortal.resumeStreaming();
-//                }
-
                 sleep(5);
-                // Share the CPU.
-
-
-                // Save more CPU resources when camera is no longer needed.
-//                visionPortal.close();
-
-
-                if (gamepad1.a){
-                    drive.flippy();
-                }
-
-                if (gamepad1.b){
-                    drive.clawGrabInner();
-                }
-                if (gamepad1.x){
-                    drive.clawGrabTwo();
-                }
-
-                if (gamepad1.y){
-                    drive.releaseInner();
-                }
-
-                if (gamepad1.left_trigger>0){
-                    drive.lift1.setPower(gamepad1.left_trigger);
-                    drive.lift2.setPower(gamepad1.left_trigger);
-                }
-                if (gamepad1.left_trigger==0 && !gamepad1.left_bumper){
-                    drive.lift1.setPower(0.09);
-                    drive.lift2.setPower(0.05);
-                }
-
-                if (gamepad1.left_bumper){
-                    drive.lift1.setPower(-0.6);
-                    drive.lift2.setPower(-0.6);
-                }
-
             }
         } else {
             throw new AssertionError();
