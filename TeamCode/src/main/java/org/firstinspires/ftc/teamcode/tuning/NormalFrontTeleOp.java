@@ -13,16 +13,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 @Config
 @TeleOp
 public class NormalFrontTeleOp extends LinearOpMode {
-    public static double flip_zer = 0;
-    public static double flip_one = 0.15;
-    public static double flip_two = 0.3;
 
-    public float ext_past;
-    public float rapidTrigger_thr = 0.0727f;
-    public float extension_sens = 0.727f; //tune for extension sensitivity
-
-    public float dead_zone_prelim = 0.1f;
-    public float dead_zone_second = 0.3f;
 
 
     public static float rapidTrigger_thr = 0.0727f;
@@ -61,48 +52,6 @@ public class NormalFrontTeleOp extends LinearOpMode {
 //                telemetry.addData("x", drive.pose.position.x);
 //                telemetry.addData("y", drive.pose.position.y);
 //                telemetry.addData("heading", drive.pose.heading);
-
-                //extension stuff
-                if ((gamepad1.right_trigger >= 0.1)){
-                    drive.ext1.setPosition((1.0 - extension_sens + gamepad1.right_trigger*extension_sens)*0.359);
-                    drive.ext2.setPosition((1.0 - extension_sens + gamepad1.right_trigger*extension_sens)*0.359);
-                }
-                else{
-                    drive.ext1.setPosition(0);
-                    drive.ext2.setPosition(0);
-                }
-
-                //bucket flip stuff
-                if (gamepad1.right_trigger <= dead_zone_prelim){
-                    drive.flip1.setPosition(flip_zer);
-                    drive.flip2.setPosition(flip_zer);
-                }
-
-                else if (gamepad1.right_trigger <= dead_zone_second){
-                    drive.flip1.setPosition(flip_two);
-                    drive.flip2.setPosition(flip_two);
-                }
-
-
-                else if ((gamepad1.right_trigger - ext_past) > 0){
-                    //extension trigger
-                    drive.flip1.setPosition(flip_one);
-                    drive.flip2.setPosition(flip_one);
-                }
-                else if ((ext_past - gamepad1.right_trigger) > rapidTrigger_thr){
-                    //extension retract
-                    drive.flip1.setPosition(flip_zer);
-                    drive.flip2.setPosition(flip_zer);
-                }
-                ext_past = gamepad1.right_trigger;
-
-                if (gamepad1.right_trigger>0){
-                    drive.intake.setPower(0.8);
-                } else if (gamepad1.right_bumper) {
-                    drive.intake.setPower(-1);
-                } else{
-                    drive.intake.setPower(0);
-                }
 
 
 
