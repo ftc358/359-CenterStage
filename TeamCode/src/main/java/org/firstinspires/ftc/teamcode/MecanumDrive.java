@@ -208,7 +208,7 @@ public final class MecanumDrive {
         flip2.setDirection(Servo.Direction.REVERSE);
         ext2.setDirection(Servo.Direction.REVERSE);
 
-/*
+
 
 
         lift1 = hardwareMap.get(DcMotorEx.class, "lift1");
@@ -258,7 +258,7 @@ public final class MecanumDrive {
 
 
 
- */
+ 
 
     public void setDrivePowers(PoseVelocity2d powers) {
         MecanumKinematics.WheelVelocities<Time> wheelVels = new MecanumKinematics(1).inverse(
