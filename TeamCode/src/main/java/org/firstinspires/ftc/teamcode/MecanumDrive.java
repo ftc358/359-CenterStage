@@ -50,14 +50,14 @@ import java.util.List;
 public final class MecanumDrive {
     public static class Params {
         // drive model parameters
-        public double inPerTick = 0.00054835273;
-        public double lateralInPerTick = 0.00039494942342965626;
-        public double trackWidthTicks = 19633.347112313866;
+        public double inPerTick = 0.00054;
+        public double lateralInPerTick = 0.000327494942342965626;
+        public double trackWidthTicks = 22670.623;
 
         // feedforward parameters (in tick units)
         public double kS = 1.1409335689442395;
-        public double kV = 0.00008575278593687293;
-        public double kA = 0;
+        public double kV = 0.000075;
+        public double kA = 0.00001815;
 
         // path profile parameters (in inches)
         public double maxWheelVel = 50;
@@ -69,13 +69,13 @@ public final class MecanumDrive {
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 0.0;
-        public double lateralGain = 0.0;
-        public double headingGain = 0.0; // shared with turn
+        public double axialGain = 8;
+        public double lateralGain = 8;
+        public double headingGain = 15; // shared with turn
 
-        public double axialVelGain = 0.0;
-        public double lateralVelGain = 0.0;
-        public double headingVelGain = 0.0; // shared with turn
+        public double axialVelGain = 0.2;
+        public double lateralVelGain = 0.2;
+        public double headingVelGain = 0.1; // shared with turn
     }
 
     public static Params PARAMS = new Params();
@@ -190,7 +190,8 @@ public final class MecanumDrive {
 
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
-
+        //rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        //rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

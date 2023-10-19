@@ -49,9 +49,9 @@ public class NormalFrontTeleOp extends LinearOpMode {
 
                 drive.updatePoseEstimate();
 
-//                telemetry.addData("x", drive.pose.position.x);
-//                telemetry.addData("y", drive.pose.position.y);
-//                telemetry.addData("heading", drive.pose.heading);
+            telemetry.addData("x", drive.pose.position.x);
+                telemetry.addData("y", drive.pose.position.y);
+                telemetry.addData("heading", drive.pose.heading);
 
 
 
