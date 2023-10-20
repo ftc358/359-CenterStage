@@ -97,7 +97,7 @@ public final class MecanumDrive {
     public DcMotorEx lift1, lift2;
     public DcMotor intake;
     public Servo claw1, claw2;
-    public Servo flip1, flip2, ext1, ext2;
+    public Servo flip1, flip2, ext1, ext2, placerPivot1, placerPivot2, planeRelease;
 
 
     public final VoltageSensor voltageSensor;
@@ -180,6 +180,51 @@ public final class MecanumDrive {
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
+        /**
+         * Control Hub (Right Side):
+         *
+         *  Motors:
+         *      0: leftFront
+         *      1: leftBack
+         *      2: rightBack
+         *      3: rightFront
+         *  Servos:
+         *      0: flip2
+         *      1: EMPTY
+         *      2: planeRelease
+         *      3: placerPivot2
+         *      4: claw2
+         *      5: ext2
+         *  Sensors:
+         *      Digital:
+         *      Analog:
+         *
+         *  USB:
+         *      Webcam Front
+         *      Webcam Back
+         *
+         *
+         *  Expansion Hub (Left Side):
+         *  Motors:
+         *      0: lift1
+         *      1: lift2
+         *      2: EMPTY
+         *      3: intake
+         *  Servos:
+         *      0: flip1
+         *      1: EMPTY
+         *      2: EMPTY
+         *      3: placerPivot1
+         *      4: claw1
+         *      5: ext1
+         *  Sensors:
+         *      Digital:
+         *      Analog:
+         *
+         *
+         *
+         */
+
 
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
         leftBack = hardwareMap.get(DcMotorEx.class, "leftBack");
@@ -188,17 +233,14 @@ public final class MecanumDrive {
 
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
-        //rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        //rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-
-
-
         intake = hardwareMap.get(DcMotor.class,"intake");
+
         flip1 = hardwareMap.get(Servo.class,"flip1");
         flip2 = hardwareMap.get(Servo.class,"flip2");
         ext1 = hardwareMap.get(Servo.class,"ext1");
@@ -207,32 +249,33 @@ public final class MecanumDrive {
         flip2.setDirection(Servo.Direction.REVERSE);
         ext2.setDirection(Servo.Direction.REVERSE);
 
-
-
-
         lift1 = hardwareMap.get(DcMotorEx.class, "lift1");
         lift2 = hardwareMap.get(DcMotorEx.class, "lift2");
         lift1.setDirection(DcMotorSimple.Direction.REVERSE);
         lift2.setDirection(DcMotorSimple.Direction.REVERSE);
-        lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         intake = hardwareMap.get(DcMotor.class,"intake");
+
+        flip1 = hardwareMap.get(Servo.class,"flip1");
+        flip2 = hardwareMap.get(Servo.class,"flip2");
+        flip2.setDirection(Servo.Direction.REVERSE);
+
+        ext1 = hardwareMap.get(Servo.class,"ext1");
+        ext2 = hardwareMap.get(Servo.class,"ext2");
+        ext2.setDirection(Servo.Direction.REVERSE);
+
+        placerPivot1 = hardwareMap.get(Servo.class,"placerPivot1");
+        placerPivot2 = hardwareMap.get(Servo.class,"placerPivot2");
+        placerPivot1.setDirection(Servo.Direction.REVERSE);
 
         claw1 = hardwareMap.get(Servo.class,"claw1");
         claw2 = hardwareMap.get(Servo.class,"claw2");
         claw1.setDirection(Servo.Direction.REVERSE);
 
-
-        flip1 = hardwareMap.get(Servo.class,"flip1");
-        flip2 = hardwareMap.get(Servo.class,"flip2");
-//        flip2.setDirection(Servo.Direction.REVERSE);
-        flip1.setDirection(Servo.Direction.REVERSE);
-        flip2.setDirection(Servo.Direction.FORWARD);
-
-        ext1 = hardwareMap.get(Servo.class,"ext1");
-        ext2 = hardwareMap.get(Servo.class,"ext2");
-        ext2.setDirection(Servo.Direction.REVERSE);
+        planeRelease = hardwareMap.get(Servo.class, "planeRelease");
 
 
         imu = hardwareMap.get(IMU.class, "imu");
