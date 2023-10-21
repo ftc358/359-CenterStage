@@ -14,45 +14,47 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 @TeleOp
 public class NormalFrontTeleOpLucas extends LinearOpMode {
 
-
+    //Dashboard Vars
     public static float rapidTrigger_thr = 0.0727f;
     public static float extension_sens = 0.727f; //tune for extension sensitivity
 
     public static double flip_lift = 0.05;
-    public static double flip_intake = 0.27;
-    public static double flip_half = 0.20;
-    public static double flip_dump = 0.5;
+    public static double flip_intake = 0.40;
+    public static double flip_half = 0.30;
+    public static double flip_dump = 0.6;
 
-    public static double claw1Grab = 0;
-    public static double claw1Drop = 0.2;
-    public static double claw2Grab = 0;
-    public static double claw2Drop = 0.2;
-
-    public static double ppGet = 0.1;
-    public static double ppPut = 0.5;
-    public static double ppGround = 1.0;
+    public static double ppGet = 0;
+    public static double ppHold = 0.21;
+    public static double ppBoardDrop = 0.80;
 
     public static double liftIdle = 0.1;
-    public static double liftDown = -0.5;
+    public static double liftDown = -1;
 
     public float ext_past;
-    public boolean liftHomed;
 
     public static double GamePadControlSensitivity = 1.0;
     public static double DriveMaxSpeed = 1.0;
 
-    //flags
-    public boolean transferTrigger = false;
 
-    //aslkdfj
-    public double flip1pos;
-    public double flip2pos;
-    public double claw1pos = 0;
-    public double claw2pos = 0;
-    public double pp1pos = 0;
-    public double pp2pos = 0;
+    //Servo Pos
+    public double flipPos;
+    public double claw1Pos = 0;
+    public double claw2Pos = 0;
+    public double ppPos = 0;
+
+    //States
+    public boolean transferTrigger = false;
     public boolean loaded = false;
     public boolean armed = false;
+    public boolean armed2 = false;
+    public boolean cycle = false;
+
+    //Timers
+    public int gravityMagic = 0;
+    public int holdTimer = 0;
+    public int interDropTimer = 0;
+    public int postDropTimer = 0;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -60,15 +62,11 @@ public class NormalFrontTeleOpLucas extends LinearOpMode {
             MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
             ext_past = 0;
 
-            //lift homing
-            ///INSERT HOMING CODE
             drive.lift1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             drive.lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             drive.lift1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             drive.lift2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-
-            liftHomed = true;
 
 
             waitForStart();
@@ -87,11 +85,6 @@ public class NormalFrontTeleOpLucas extends LinearOpMode {
                 if ((gamepad1.right_trigger >= 0.1)){
                     drive.ext1.setPosition((1.0 - extension_sens + gamepad1.right_trigger*extension_sens)*0.359);
                     drive.ext2.setPosition((1.0 - extension_sens + gamepad1.right_trigger*extension_sens)*0.359);
-                    //lift down
-                    //home lift
-                    ///INSERT HOMING CODE
-                    //lift goes back to
-                    liftHomed = true;
                 }
                 else{
                     drive.ext1.setPosition(0);
@@ -100,24 +93,21 @@ public class NormalFrontTeleOpLucas extends LinearOpMode {
 
                 //bucket flip stuff
                 if (gamepad1.options){
-                    flip1pos = flip_dump;
-                    flip2pos = flip_dump;
+                    flipPos = flip_dump;
                 } //dumps
                 else if (gamepad1.right_trigger == 0 && !gamepad1.options){
-                    flip1pos = flip_lift;
-                    flip2pos = flip_lift;
+                    flipPos = flip_lift;
                 }
                 else if (((gamepad1.right_trigger - ext_past) > 0)&& !gamepad1.options){
                     //extension trigger
-                    flip1pos = flip_intake;
-                    flip2pos = flip_intake;
+                    flipPos = flip_intake;
                 }
                 else if (((ext_past - gamepad1.right_trigger) > rapidTrigger_thr)&& !gamepad1.options){
                     //extension retract
-                    flip1pos = flip_half;
-                    flip2pos = flip_half;
+                    flipPos = flip_half;
                 };
                 ext_past = gamepad1.right_trigger;
+
 
                 //lift stuff
                 if (gamepad1.left_trigger > 0){
@@ -129,45 +119,71 @@ public class NormalFrontTeleOpLucas extends LinearOpMode {
                 }else{
                     drive.lift1.setPower(0);
                     drive.lift2.setPower(0);
-                }
+                } //Lift motors do not coordinate fix later
+
+
 
                 //transfer
-                if (gamepad1.y){
-                    claw1pos = 0;
-                    claw2pos = 0;
-                    transferTrigger = true;
-                }
-                else if (gamepad1.x && transferTrigger){
-                    pp1pos = 0.21;
-                    pp2pos = 0.21;
-                    transferTrigger = false;
+                if (!loaded && gamepad1.x){
+                    ppPos = 0.21;
                     loaded = true;
                 }
-                if (transferTrigger){
-                    flip1pos = 0;
-                    flip2pos = 0;
-                    pp1pos = 0.2;
-                    pp2pos = 0.2;
+                //Pause for Claw Lock
+                else if (loaded && !cycle){
+                    gravityMagic++;
+                    if (gravityMagic > 10){
+                        claw1Pos = 0.38;
+                        claw2Pos = 0.45;
+                        cycle = true;
+                        gravityMagic = 0;
+                    }
                 }
-                if (loaded && gamepad1.a){
-                    claw1pos = 0.38;
-                    claw2pos = 0.45;
-                    pp1pos = 0.727;
-                    pp2pos = 0.727;
-                    armed = true;
+                else if (loaded && cycle){
+                    holdTimer++;
+                    if ((holdTimer > 50)&&gamepad1.x) {
+                        ppPos = ppBoardDrop;
+                        armed = true;
+                        armed2 = true;
+                        loaded = false;
+                    }
                 }
 
-                if (armed && loaded && gamepad1.a && !transferTrigger){
-                    claw2pos = 0;
+
+                //First Drop
+                if (!loaded && armed && armed2){
+                    if (gamepad1.a) {//Drop First
+                        claw2Pos = 0;
+                        armed2 = false;
+                    }
+                    if (gamepad1.b){//Drop Everything
+                        claw2Pos = 0;
+                        claw1Pos = 0;
+                        armed2 = false;
+                        armed = false;
+                    }
                 }
-                else if (armed && (claw2pos==0) && gamepad1.a && !transferTrigger){
-                    claw1pos = 0;
-                    armed = false;
-                    loaded = false;
+
+                //Second Drop
+                else if (!loaded && armed && !armed2){
+                    interDropTimer++;
+                    if ((interDropTimer>30)&&gamepad1.a) {
+                        claw1Pos = 0;
+                        armed = false;
+                        loaded = false;
+                        interDropTimer = 0;
+                    }
                 }
-                else if (!loaded && !armed){
-                    pp1pos = 0;
-                    pp2pos = 0;
+
+
+                //Reset After Drop
+                else if (!loaded && !armed && cycle){
+                    postDropTimer++;
+                    if (postDropTimer >40) {
+                        ppPos = 0;
+                        cycle = false;
+                        postDropTimer = 0;
+                        flipPos = 0.05;
+                    }
                 }
 
 
@@ -183,21 +199,37 @@ public class NormalFrontTeleOpLucas extends LinearOpMode {
                 }
 
 
-                //actually move servos
-                drive.flip1.setPosition(flip1pos);
-                drive.flip2.setPosition(flip2pos);
-                drive.claw1.setPosition(claw1pos);
-                drive.claw2.setPosition(claw2pos);
-                drive.placerPivot1.setPosition(pp1pos);
-                drive.placerPivot2.setPosition(pp2pos);
+                //Actuate Servos
+                drive.flip1.setPosition(flipPos);
+                drive.flip2.setPosition(flipPos);
+                drive.claw1.setPosition(claw1Pos);
+                drive.claw2.setPosition(claw2Pos);
+                drive.placerPivot1.setPosition(ppPos);
+                drive.placerPivot2.setPosition(ppPos);
 
-                telemetry.addData("flipPos",flip1pos);
-                telemetry.addData("clawPos",claw1pos);
-                telemetry.addData("ppPos",pp1pos);
+
+                //Debug
+                telemetry.addLine("Servos");
+                telemetry.addData("flipPos", flipPos);
+                telemetry.addData("clawPos1", claw1Pos);
+                telemetry.addData("clawPos2", claw2Pos);
+                telemetry.addData("ppPos", ppPos);
+
+                telemetry.addLine("States");
                 telemetry.addData("transfer",transferTrigger);
                 telemetry.addData("armed",armed);
+                telemetry.addData("armed2",armed2);
                 telemetry.addData("loaded",loaded);
+                telemetry.addData("cycle",cycle);
+
+                telemetry.addLine("Time");
+                telemetry.addData("gravity", gravityMagic);
+                telemetry.addData("holdTimer",holdTimer);
+                telemetry.addData("interDropWait", interDropTimer);
+                telemetry.addData("postDropWait", postDropTimer);
                 telemetry.update();
+
+                sleep(5);
             }
 
         } else {
