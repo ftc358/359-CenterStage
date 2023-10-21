@@ -25,7 +25,7 @@ public class EepEep {
                                 .build()
                 );
 
-        meepMeep.setBackground(MeepMeep.Background.F)
+        meepMeep.setBackground(MeepMeep.Background.FIELD_POWERPLAY_KAI_LIGHT)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(myBot)

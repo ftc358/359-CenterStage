@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 @Config
 @TeleOp
-public class NormalFrontTeleOp extends LinearOpMode {
+public class NormalFrontTeleOpLucas extends LinearOpMode {
 
 
     public static float rapidTrigger_thr = 0.0727f;
@@ -51,6 +51,8 @@ public class NormalFrontTeleOp extends LinearOpMode {
     public double claw2pos = 0;
     public double pp1pos = 0;
     public double pp2pos = 0;
+    public boolean loaded = false;
+    public boolean armed = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -86,12 +88,10 @@ public class NormalFrontTeleOp extends LinearOpMode {
                     drive.ext1.setPosition((1.0 - extension_sens + gamepad1.right_trigger*extension_sens)*0.359);
                     drive.ext2.setPosition((1.0 - extension_sens + gamepad1.right_trigger*extension_sens)*0.359);
                     //lift down
-
                     //home lift
                     ///INSERT HOMING CODE
                     //lift goes back to
                     liftHomed = true;
-
                 }
                 else{
                     drive.ext1.setPosition(0);
@@ -102,7 +102,7 @@ public class NormalFrontTeleOp extends LinearOpMode {
                 if (gamepad1.options){
                     flip1pos = flip_dump;
                     flip2pos = flip_dump;
-                }
+                } //dumps
                 else if (gamepad1.right_trigger == 0 && !gamepad1.options){
                     flip1pos = flip_lift;
                     flip2pos = flip_lift;
@@ -132,27 +132,46 @@ public class NormalFrontTeleOp extends LinearOpMode {
                 }
 
                 //transfer
-                if (gamepad1.y == true){
+                if (gamepad1.y){
+                    claw1pos = 0;
+                    claw2pos = 0;
                     transferTrigger = true;
                 }
-                else if (gamepad1.x == true && transferTrigger == true){
-                    claw1pos = 0.38;
-                    claw2pos = 0.45;
+                else if (gamepad1.x && transferTrigger){
                     pp1pos = 0.21;
                     pp2pos = 0.21;
                     transferTrigger = false;
+                    loaded = true;
                 }
-                if (transferTrigger == true){
+                if (transferTrigger){
                     flip1pos = 0;
                     flip2pos = 0;
                     pp1pos = 0.2;
                     pp2pos = 0.2;
                 }
+                if (loaded && gamepad1.a){
+                    claw1pos = 0.38;
+                    claw2pos = 0.45;
+                    pp1pos = 0.727;
+                    pp2pos = 0.727;
+                    armed = true;
+                }
 
-                //drive.placerPivot1.setPosition(gamepad1.right_trigger);
-                //drive.placerPivot2.setPosition(gamepad1.right_trigger);
-                //telemetry.addData("claw1", gamepad1.right_trigger);
-                //telemetry.addData("claw2", gamepad1.right_trigger);
+                if (armed && loaded && gamepad1.a && !transferTrigger){
+                    claw2pos = 0;
+                }
+                else if (armed && (claw2pos==0) && gamepad1.a && !transferTrigger){
+                    claw1pos = 0;
+                    armed = false;
+                    loaded = false;
+                }
+                else if (!loaded && !armed){
+                    pp1pos = 0;
+                    pp2pos = 0;
+                }
+
+
+
 
                 //Intake Trigger
                 if (gamepad1.right_trigger>0){
@@ -172,6 +191,12 @@ public class NormalFrontTeleOp extends LinearOpMode {
                 drive.placerPivot1.setPosition(pp1pos);
                 drive.placerPivot2.setPosition(pp2pos);
 
+                telemetry.addData("flipPos",flip1pos);
+                telemetry.addData("clawPos",claw1pos);
+                telemetry.addData("ppPos",pp1pos);
+                telemetry.addData("transfer",transferTrigger);
+                telemetry.addData("armed",armed);
+                telemetry.addData("loaded",loaded);
                 telemetry.update();
             }
 
