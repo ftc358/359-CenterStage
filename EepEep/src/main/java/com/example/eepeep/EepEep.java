@@ -15,15 +15,15 @@ public class EepEep {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(12, -60, Math.toRadians(90)))
-                                .splineToLinearHeading(new Pose2d(24, -36,Math.toRadians(-90)),0)
+                                .splineToLinearHeading(new Pose2d(24, -30,Math.toRadians(-90)),0)
                                 //new SequentialAction()
                                 //)
-                                .splineToLinearHeading(new Pose2d(40, -40,Math.toRadians(180)), Math.toRadians(0))
-
+                                .splineToLinearHeading(new Pose2d(44, -40,Math.toRadians(178)), Math.toRadians(0))
+                                .lineTo(new Vector2d(-60,-36))
                                 .build()
                 );
 
-        meepMeep.setBackground(MeepMeep.Background.FIELD_POWERPLAY_KAI_LIGHT)
+        meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(myBot)

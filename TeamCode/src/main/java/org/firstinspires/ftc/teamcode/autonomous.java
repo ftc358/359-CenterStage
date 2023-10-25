@@ -31,10 +31,15 @@ public class autonomous extends LinearOpMode {
 
         Actions.runBlocking(
                 drive.actionBuilder(drive.pose)
-                        .splineToLinearHeading(new Pose2d(24, -36,Math.toRadians(-90)),0)
-                        //new SequentialAction()
+
+                        .splineToLinearHeading(new Pose2d(24, -30  ,Math.toRadians(-90)),0)
+                        // new SequentialAction(
+                          //
+
                         //)
-                        .splineToLinearHeading(new Pose2d(40, -40,Math.toRadians(180)), Math.toRadians(0))
+                        .splineToLinearHeading(new Pose2d(44, -40,Math.toRadians(178)), Math.toRadians(0))
+                        .lineToY(-36)
+                        .lineToX(-60)
                         .build());
 
 
