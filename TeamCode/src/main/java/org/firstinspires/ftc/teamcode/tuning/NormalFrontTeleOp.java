@@ -171,6 +171,11 @@ public class NormalFrontTeleOp extends LinearOpMode {
                 drive.claw2.setPosition(claw2pos);
                 drive.placerPivot1.setPosition(pp1pos);
                 drive.placerPivot2.setPosition(pp2pos);
+                drive.updatePoseEstimate();
+
+                telemetry.addData("x", drive.pose.position.x);
+                telemetry.addData("y", drive.pose.position.y);
+                telemetry.addData("heading", drive.pose.heading);
 
                 telemetry.update();
             }
