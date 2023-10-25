@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 @Config
 @TeleOp
-public class NormalFrontTeleOpLucas extends LinearOpMode {
+public class NormalFrontTeleOpLucasRevised extends LinearOpMode {
 
     //Dashboard Vars
     public static float rapidTrigger_thr = 0.0727f;
@@ -32,47 +32,70 @@ public class NormalFrontTeleOpLucas extends LinearOpMode {
     public static double liftIdle = 0.1;
     public static double liftDown = -1;
 
-    public float ext_past;
+
 
     public static double GamePadControlSensitivity = 1.0;
     public static double DriveMaxSpeed = 1.0;
 
+    public static double claw1Grab = 0.38;
+    public static double claw2Grab = 0.45;
+
+
 
     //Servo Pos
-    public double flipPos;
-    public double claw1Pos = 0;
+    double flipPos;
+    double claw1Pos = 0;
     public double claw2Pos = 0;
     public double ppPos = 0;
 
     //States
-    public boolean transferTrigger = false;
-    public boolean retracted = false;
-    public boolean armed = false;
-    public boolean armed2 = false;
-    public boolean cycle = false;
-    public boolean loaded = false;
+    boolean bucketPrime = false;
+    boolean loadPP = false;
+    boolean rd2drop = false;
+    boolean drop1 = false;
+    boolean drop2 = false;
+    boolean cycleFinished = false;
 
-    //Timers
-    public int retractTimer = 0;
-    public int gravityMagic = 0;
-    public int holdTimer = 0;
-    public int interDropTimer = 0;
-    public int postDropTimer = 0;
+
+
+    boolean gp1ANow = false; //debounce for repeated button
+    boolean gp2ALast = false;;
+    boolean dBouncegp1a = false;
+    float ext_past;
+
 
     //PS5 Rumble
-    Gamepad.RumbleEffect readyToDrop;
+    Gamepad.RumbleEffect batteryCritical, drop1Ready, drop2Ready;
 
-    public double straight = 0;
-    public double turn = 0;
-    public double strafe = 0;
+    double straight = 0;
+    double turn = 0;
+    double strafe = 0;
+
+    double currentVoltage = 16;
+    double lowestVoltage = 11;
 
 
 
     @Override
     public void runOpMode() throws InterruptedException {
-        readyToDrop = new Gamepad.RumbleEffect.Builder()
-                .addStep(1.0,1.0,500)
+        batteryCritical = new Gamepad.RumbleEffect.Builder()
+                .addStep(1.0,1.0,1000)
+                .addStep(0,0,1000)
                 .build();
+
+        drop1Ready = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.3,0.3,200)
+                .addStep(0,0,200)
+                .addStep(0.7,0.7,200)
+                .addStep(0,0,200)
+                .build();
+        drop2Ready = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.3,0.3,100)
+                .addStep(0,0,100)
+                .addStep(0.7,0.7,100)
+                .addStep(0,0,100)
+                .build();
+
 
 
             MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
@@ -86,6 +109,15 @@ public class NormalFrontTeleOpLucas extends LinearOpMode {
 
             waitForStart();
             while (opModeIsActive()) {
+                currentVoltage = drive.voltageSensor.getVoltage();
+                if (currentVoltage<lowestVoltage){
+                    lowestVoltage = currentVoltage;
+                }
+                if (lowestVoltage<10){
+                    gamepad1.runRumbleEffect(batteryCritical);
+                    gamepad2.runRumbleEffect(batteryCritical);
+                }
+
 
 
                 if (gamepad1.left_stick_y<-0.1){
@@ -164,7 +196,7 @@ public class NormalFrontTeleOpLucas extends LinearOpMode {
                     //extension retract
                     flipPos = flip_half;
                 };
-                ext_past = gamepad2.right_trigger;
+
 
 
                 //lift stuff
@@ -182,91 +214,66 @@ public class NormalFrontTeleOpLucas extends LinearOpMode {
 
 
                 //transfer
-
-
-                if (gamepad2.y && !retracted){
-//                    flipPos = flip_lift;
-                    loaded = true;
-                    retractTimer++;
-                    if (retractTimer >= 30 && gamepad2.y) {
-                        ppPos = ppHold;
-                        retracted = true;
-                        retractTimer = 0;
-                    }
+                gp1ANow = gamepad1.a;
+                //Debouncing for Gamepad
+                if (gp1ANow && !gp2ALast) {
+                    dBouncegp1a = true;
+                } else {
+                    dBouncegp1a = false;
                 }
 
-                //Pause for Claw Lock
-                else if (retracted && !cycle){
-                    gravityMagic++;
-                    if (gravityMagic > 30){
-                        claw1Pos = 0.38;
-                        claw2Pos = 0.45;
-                        cycle = true;
-                        gravityMagic = 0;
-                    }
+                if (gamepad2.x && !bucketPrime){
+                    bucketPrime = true; //Move this to below if jake wants on one key, add timer if necc.
+                } else if (gamepad2.y && bucketPrime){
+                    loadPP = true;
+                } else if (gamepad2.b && loadPP){
+                    rd2drop = true;
+                } else if (dBouncegp1a && rd2drop){ //could switch this out for gamepad1.a and gamepad1.b if needed.
+                    drop1 = true;
+                } else if (dBouncegp1a && drop1){
+                    drop2 = true;
                 }
-                else if (retracted && cycle){
-                    holdTimer++;
-                    if ((holdTimer > 50)&&gamepad2.x) {
-                        ppPos = ppBoardDrop;
-                        armed = true;
-                        armed2 = true;
-                        retracted = false;
-                    }
-                }
-
-
-                //First Drop
-                if (!retracted && armed && armed2){
-                    gamepad1.runRumbleEffect(readyToDrop);
-                    if (gamepad1.a) {//Drop First
-                        claw2Pos = 0;
-                        armed2 = false;
-                    }
-                    if (gamepad1.b){//Drop Everything
-                        claw2Pos = 0;
-                        claw1Pos = 0;
-                        armed2 = false;
-                        armed = false;
-                    }
-                }
-
-                //Second Drop
-                else if (!retracted && armed && !armed2){
-                    gamepad1.runRumbleEffect(readyToDrop);
-                    interDropTimer++;
-                    if ((interDropTimer>30)&&gamepad1.a) {
-                        claw1Pos = 0;
-                        armed = false;
-                        retracted = false;
-                        interDropTimer = 0;
-                    }
+                else if (gamepad2.dpad_left) { //Reset: Drops both
+                    drop1 = true;
+                    drop2 = true;
+                }else if (cycleFinished){
+                    bucketPrime = false;
+                    loadPP = false;
+                    rd2drop = false;
+                    drop1 = false;
+                    drop2 = false;
+                    cycleFinished = false;
                 }
 
 
-                //Reset After Drop
-                else if (!retracted && !armed && cycle){
-                    postDropTimer++;
-                    if (postDropTimer >40) {
-                        ppPos = 0;
-                        cycle = false;
-                        postDropTimer = 0;
-                        flipPos = 0.05;
-                        loaded = false;
-                    }
-                }
 
-                if (loaded){
+                if (bucketPrime){
+                    ppPos = 0;
                     flipPos = flip_lift;
-                    if (gamepad2.x){
-                        loaded = false;
+                }
+                if (loadPP){
+                    ppPos = ppHold;
+                    claw1Pos = claw1Grab;//No Pause for Claw lock, add timer if issue
+                    claw2Pos = claw2Grab;
+                }
+                if (rd2drop){
+                    flipPos = flip_vert;
+                    ppPos = ppBoardDrop;
+                    if (!drop1) {
+                        gamepad1.runRumbleEffect(drop1Ready);
                     }
                 }
-
-
-
-
-
+                if (drop1){
+                    claw2Pos = 0;
+                    if (!drop2) {
+                        gamepad2.runRumbleEffect(drop2Ready);
+                    }
+                }
+                if (drop2){
+                    claw1Pos = 0;
+                    ppPos = ppGet;
+                    cycleFinished = true;
+                }
 
 
                 //Actuate Servos
@@ -285,28 +292,26 @@ public class NormalFrontTeleOpLucas extends LinearOpMode {
                 telemetry.addData("Turn",turn);
 
 
-                telemetry.addLine("Servos");
-                telemetry.addData("flipPos", flipPos);
-                telemetry.addData("clawPos1", claw1Pos);
-                telemetry.addData("clawPos2", claw2Pos);
-                telemetry.addData("ppPos", ppPos);
+//                telemetry.addLine("Servos");
+//                telemetry.addData("flipPos", flipPos);
+//                telemetry.addData("clawPos1", claw1Pos);
+//                telemetry.addData("clawPos2", claw2Pos);
+//                telemetry.addData("ppPos", ppPos);
 
-                telemetry.addLine("States");
-                telemetry.addData("transfer",transferTrigger);
-                telemetry.addData("armed",armed);
-                telemetry.addData("armed2",armed2);
-                telemetry.addData("loaded",loaded);
-                telemetry.addData("retracted", retracted);
-                telemetry.addData("cycle",cycle);
+                telemetry.addLine("States In Order");
+                telemetry.addData("BucketPrime",bucketPrime);
+                telemetry.addData("loadPP",loadPP);
+                telemetry.addData("rd2drop",rd2drop);
+                telemetry.addData("drop1",drop1);
+                telemetry.addData("drop2", drop2);
+                telemetry.addData("cycleFinished",cycleFinished);
 
-                telemetry.addLine("Time");
-                telemetry.addData("gravity", gravityMagic);
-                telemetry.addData("holdTimer",holdTimer);
-                telemetry.addData("interDropWait", interDropTimer);
-                telemetry.addData("postDropWait", postDropTimer);
                 telemetry.update();
 
-                sleep(5);
+
+                //Variables updated per run;
+                gp2ALast = gp1ANow;// debounce
+                ext_past = gamepad2.right_trigger;
             }
 
 

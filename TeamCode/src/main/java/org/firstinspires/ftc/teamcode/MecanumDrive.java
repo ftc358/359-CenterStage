@@ -40,6 +40,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.tuning.NormalFrontTeleOpLucasRevised;
 
 import java.lang.Math;
 import java.util.Arrays;
@@ -101,6 +102,7 @@ public final class MecanumDrive {
 
 
     public final VoltageSensor voltageSensor;
+
 
     public final IMU imu;
 
@@ -290,8 +292,61 @@ public final class MecanumDrive {
     }
 
 
+    public void intakeOn(){
+        intake.setPower(0.727);
+    }
+    public void intakeReverse(){
+        intake.setPower(-1);
+    }
+    public void intakeOff(){
+        intake.setPower(0);
+    }
 
-
+    public void extendZero(){
+        ext1.setPosition(0);
+        ext2.setPosition(0);
+    }
+    public void extendOut(double ServoPos){//Maybe should do a ServoPos to inch conversion?
+        ext1.setPosition(ServoPos);
+        ext2.setPosition(ServoPos);
+    }
+    public void bucketGetPixel(){
+        flip1.setPosition(NormalFrontTeleOpLucasRevised.flip_intake);
+        flip2.setPosition(NormalFrontTeleOpLucasRevised.flip_intake);
+    }
+    public void bucketVertical(){
+        flip1.setPosition(NormalFrontTeleOpLucasRevised.flip_vert);
+        flip2.setPosition(NormalFrontTeleOpLucasRevised.flip_vert);
+        placerPivot1.setPosition(NormalFrontTeleOpLucasRevised.ppGet);
+        placerPivot2.setPosition(NormalFrontTeleOpLucasRevised.ppGet);
+    }
+    public void bucketTransfer(){
+        flip1.setPosition(NormalFrontTeleOpLucasRevised.flip_lift);
+        flip2.setPosition(NormalFrontTeleOpLucasRevised.flip_lift);
+    }
+    public void ppHold(){
+        claw1.setPosition(NormalFrontTeleOpLucasRevised.claw1Grab);
+        claw2.setPosition(NormalFrontTeleOpLucasRevised.claw2Grab);
+    }
+    public void ppBoard(){
+        placerPivot1.setPosition(NormalFrontTeleOpLucasRevised.ppBoardDrop);
+        placerPivot2.setPosition(NormalFrontTeleOpLucasRevised.ppBoardDrop);
+    }
+    public void ppGround(){
+        placerPivot1.setPosition(1);//as far as it can go
+        placerPivot2.setPosition(1);
+    }
+    public void dropOut(){
+        claw2.setPosition(0);
+    }
+    public void dropAll(){
+        claw2.setPosition(0);
+        claw1.setPosition(0);
+    }
+    public void homeAll(){
+        bucketVertical();
+        dropAll();
+    }
 
 
 
