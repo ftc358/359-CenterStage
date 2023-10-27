@@ -46,14 +46,14 @@ public int color = 0;
         drive.extendZero();
         drive.ppZero();
         sleep(500);
-        color = 3;
+        color = 1;
 
         drive.ppHold();
         waitForStart();
         if (color == 1) {
             runBlocking(new SequentialAction(
                     drive.actionBuilder(drive.pose)
-                            .splineToLinearHeading(new Pose2d(9, -30, Math.toRadians(0)), 0)
+                            .splineToLinearHeading(new Pose2d(8.4, -30, Math.toRadians(0)), 90)
                             .build()));
 
         } else if (color ==2){

@@ -1,5 +1,7 @@
 package com.example.eepeep;
 
+import static java.lang.Math.toRadians;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
@@ -14,11 +16,12 @@ public class EepEep {
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(17.4, -34, Math.toRadians(-192)))
-                                .splineToLinearHeading(new Pose2d(49, -25,Math.toRadians(0)),Math.toRadians(178))
+                        drive.trajectorySequenceBuilder(new Pose2d(12, -60, toRadians(90)))
+                                //.splineToLinearHeading(new Pose2d(49, -25,Math.toRadians(0)),Math.toRadians(178))
                                 //new SequentialAction()
                                 //
                                 //.strafeTo(new Vector2d(-60, -36))
+                                .splineToLinearHeading(new Pose2d(9, -30, Math.toRadians(0)), 90)
                                 .build()
                 );
 
