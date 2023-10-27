@@ -51,8 +51,8 @@ public final class MecanumDrive {
     public static class Params {
         // drive model parameters
         public double inPerTick = 0.00054;
-        public double lateralInPerTick = 0.000327494942342965626;
-        public double trackWidthTicks = 22670.623;
+        public double lateralInPerTick = 0.00032;
+        public double trackWidthTicks = 23739.782090550972;
 
         // feedforward parameters (in tick units)
         public double kS = 1.1409335689442395;
@@ -70,8 +70,8 @@ public final class MecanumDrive {
 
         // path controller gains
         public double axialGain = 8;
-        public double lateralGain = 8;
-        public double headingGain = 15; // shared with turn
+        public double lateralGain = 14;
+        public double headingGain = 16; // shared with turn
 
         public double axialVelGain = 0.2;
         public double lateralVelGain = 0.2;
@@ -334,6 +334,10 @@ public final class MecanumDrive {
     public void ppGround(){
         placerPivot1.setPosition(1);//as far as it can go
         placerPivot2.setPosition(1);
+    }
+    public void ppZero(){
+        placerPivot1.setPosition(0);//as far as it can go
+        placerPivot2.setPosition(0);
     }
     public void dropOut(){
         claw2.setPosition(0);
