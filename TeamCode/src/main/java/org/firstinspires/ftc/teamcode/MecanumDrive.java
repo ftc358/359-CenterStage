@@ -336,6 +336,10 @@ public final class MecanumDrive {
         placerPivot1.setPosition(1);//as far as it can go
         placerPivot2.setPosition(1);
     }
+    public void ppZero(){
+        placerPivot1.setPosition(0);//as far as it can go
+        placerPivot2.setPosition(0);
+    }
     public void dropOut(){
         claw2.setPosition(0);
     }

@@ -14,12 +14,11 @@ public class EepEep {
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(12, -60, Math.toRadians(90)))
-                                .splineToLinearHeading(new Pose2d(24, -30,Math.toRadians(-90)),0)
+                        drive.trajectorySequenceBuilder(new Pose2d(17.4, -34, Math.toRadians(-192)))
+                                .splineToLinearHeading(new Pose2d(49, -25,Math.toRadians(0)),Math.toRadians(178))
                                 //new SequentialAction()
-                                //)
-                                .splineToLinearHeading(new Pose2d(44, -40,Math.toRadians(178)), Math.toRadians(0))
-                                .lineTo(new Vector2d(-60,-36))
+                                //
+                                //.strafeTo(new Vector2d(-60, -36))
                                 .build()
                 );
 
