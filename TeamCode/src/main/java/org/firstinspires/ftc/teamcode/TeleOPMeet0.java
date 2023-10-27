@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.tuning;
+package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -9,14 +9,12 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.teamcode.MecanumDrive;
-
 @Config
-@TeleOp
-public class NormalFrontTeleOpLucasRevised extends LinearOpMode {
+@TeleOp (name = "Meet 0 TeleOp",group = "TeleOP")
+public class TeleOPMeet0 extends LinearOpMode {
 
     //Dashboard Vars
-    public static float rapidTrigger_thr = 0.0727f;
+    public static float rapidTrigger_thr = 0.1f;
     public static float extension_sens = 0.727f; //tune for extension sensitivity
 
     public static double flip_lift = 0.05;
@@ -32,13 +30,15 @@ public class NormalFrontTeleOpLucasRevised extends LinearOpMode {
     public static double liftIdle = 0.1;
     public static double liftDown = -1;
 
+    public static double intakeSpeed = 0.727;
+
 
 
     public static double GamePadControlSensitivity = 1.0;
     public static double DriveMaxSpeed = 1.0;
 
     public static double claw1Grab = 0.38;
-    public static double claw2Grab = 0.45;
+    public static double claw2Grab = 0.47;
 
 
 
@@ -55,9 +55,11 @@ public class NormalFrontTeleOpLucasRevised extends LinearOpMode {
     boolean drop1 = false;
     boolean drop2 = false;
     boolean cycleFinished = false;
+    boolean afterDrop = false;
 
 
 
+    //According to gm0 section on gamepads, this could be simplified
     boolean gp1ANow = false; //debounce for repeated button
     boolean gp2ALast = false;;
     boolean dBouncegp1a = false;
@@ -76,6 +78,14 @@ public class NormalFrontTeleOpLucasRevised extends LinearOpMode {
 
 
 
+
+    Gamepad currentGamepad1 = new Gamepad();
+    Gamepad currentGamepad2 = new Gamepad();
+
+    Gamepad previousGamepad1 = new Gamepad();
+    Gamepad previousGamepad2 = new Gamepad();
+
+
     @Override
     public void runOpMode() throws InterruptedException {
         batteryCritical = new Gamepad.RumbleEffect.Builder()
@@ -85,7 +95,7 @@ public class NormalFrontTeleOpLucasRevised extends LinearOpMode {
 
         drop1Ready = new Gamepad.RumbleEffect.Builder()
                 .addStep(0.3,0.3,200)
-                .addStep(0,0,200)
+                .addStep(0,0,20)
                 .addStep(0.7,0.7,200)
                 .addStep(0,0,200)
                 .build();
@@ -109,14 +119,20 @@ public class NormalFrontTeleOpLucasRevised extends LinearOpMode {
 
             waitForStart();
             while (opModeIsActive()) {
-                currentVoltage = drive.voltageSensor.getVoltage();
-                if (currentVoltage<lowestVoltage){
-                    lowestVoltage = currentVoltage;
-                }
-                if (lowestVoltage<10){
-                    gamepad1.runRumbleEffect(batteryCritical);
-                    gamepad2.runRumbleEffect(batteryCritical);
-                }
+//                currentVoltage = drive.voltageSensor.getVoltage();
+//                if (currentVoltage<lowestVoltage){
+//                    lowestVoltage = currentVoltage;
+//                }
+//                if (lowestVoltage<10){
+//                    gamepad1.runRumbleEffect(batteryCritical);
+//                    gamepad2.runRumbleEffect(batteryCritical);
+//                } Too annoying
+
+                previousGamepad1.copy(currentGamepad1);
+                previousGamepad2.copy(currentGamepad2);
+
+                currentGamepad1.copy(gamepad1);
+                currentGamepad2.copy(gamepad2);
 
 
 
@@ -162,9 +178,9 @@ public class NormalFrontTeleOpLucasRevised extends LinearOpMode {
 
 
                 //Intake Trigger
-                if (gamepad2.right_trigger>0){
-                    drive.intake.setPower(0.727); // \-0-/ WYSI
-                } else if (gamepad2.right_bumper) {
+                if (gamepad2.left_trigger>0){
+                    drive.intake.setPower(intakeSpeed); // \-0-/ WYSI
+                } else if (gamepad2.left_bumper) {
                     drive.intake.setPower(-1);
                 } else{
                     drive.intake.setPower(0);
@@ -172,9 +188,9 @@ public class NormalFrontTeleOpLucasRevised extends LinearOpMode {
 
 
                 //extension trigger
-                if ((gamepad2.right_trigger >= 0.1)){
-                    drive.ext1.setPosition((1.0 - extension_sens + gamepad2.right_trigger*extension_sens)*0.359);
-                    drive.ext2.setPosition((1.0 - extension_sens + gamepad2.right_trigger*extension_sens)*0.359);
+                if ((gamepad2.left_trigger >= 0.1)){
+                    drive.ext1.setPosition((1.0 - extension_sens + gamepad2.left_trigger*extension_sens)*0.5);
+                    drive.ext2.setPosition((1.0 - extension_sens + gamepad2.left_trigger*extension_sens)*0.5);
                 }
                 else{
                     drive.ext1.setPosition(0);
@@ -182,17 +198,17 @@ public class NormalFrontTeleOpLucasRevised extends LinearOpMode {
                 }
 
                 //bucket flip stuff
-                if (gamepad2.options&&!gamepad2.x){
+                if (gamepad2.back&&!gamepad2.x){
                     flipPos = flip_dump;
                 } //dumps
-                else if (gamepad2.right_trigger == 0 && !gamepad2.options &&!gamepad2.x){
+                else if (gamepad2.left_trigger == 0 && !gamepad2.back &&!gamepad2.x){
                     flipPos = flip_vert;
                 }
-                else if (((gamepad2.right_trigger - ext_past) > 0)&& !gamepad2.options &&!gamepad2.x){
+                else if (((gamepad2.left_trigger - ext_past) > 0)&& !gamepad2.back &&!gamepad2.x){
                     //extension trigger
                     flipPos = flip_intake;
                 }
-                else if (((ext_past - gamepad2.right_trigger) > rapidTrigger_thr)&& !gamepad2.options &&!gamepad2.x){
+                else if (((ext_past - gamepad2.left_trigger) > rapidTrigger_thr)&& !gamepad2.back &&!gamepad2.x){
                     //extension retract
                     flipPos = flip_half;
                 };
@@ -200,10 +216,10 @@ public class NormalFrontTeleOpLucasRevised extends LinearOpMode {
 
 
                 //lift stuff
-                if (gamepad2.left_trigger > 0){
-                    drive.lift1.setPower(1);
-                    drive.lift2.setPower(1);
-                }else if (gamepad2.left_bumper){
+                if (gamepad2.right_trigger > 0){
+                    drive.lift1.setPower(gamepad2.right_trigger);
+                    drive.lift2.setPower(gamepad2.right_trigger);
+                }else if (gamepad2.right_bumper){
                     drive.lift1.setPower(liftDown);
                     drive.lift2.setPower(liftDown);
                 }else{
@@ -214,34 +230,41 @@ public class NormalFrontTeleOpLucasRevised extends LinearOpMode {
 
 
                 //transfer
-                gp1ANow = gamepad1.a;
-                //Debouncing for Gamepad
-                if (gp1ANow && !gp2ALast) {
-                    dBouncegp1a = true;
-                } else {
-                    dBouncegp1a = false;
-                }
+//                gp1ANow = gamepad1.a;
+//                //Debouncing for Gamepad
+//                if (gp1ANow && !gp2ALast) {
+//                    dBouncegp1a = true;
+//                } else {
+//                    dBouncegp1a = false;
+//                }
 
-                if (gamepad2.x && !bucketPrime){
+                if ((currentGamepad2.x && !previousGamepad2.x) && !bucketPrime){
                     bucketPrime = true; //Move this to below if jake wants on one key, add timer if necc.
-                } else if (gamepad2.y && bucketPrime){
+                } else if ((currentGamepad2.x && !previousGamepad2.x) && bucketPrime &&!loadPP){
                     loadPP = true;
-                } else if (gamepad2.b && loadPP){
+
+                } else if ((currentGamepad2.x && !previousGamepad2.x) && loadPP &&!rd2drop){
                     rd2drop = true;
-                } else if (dBouncegp1a && rd2drop){ //could switch this out for gamepad1.a and gamepad1.b if needed.
+
+                } else if ((currentGamepad1.b && !previousGamepad1.b) && rd2drop &&!drop1){ //Drop the Outermost Pixel
                     drop1 = true;
-                } else if (dBouncegp1a && drop1){
+                } else if ((currentGamepad1.b && !previousGamepad1.b) && drop1 &&!drop2){ //Drop the Innermost Pixel
                     drop2 = true;
                 }
                 else if (gamepad2.dpad_left) { //Reset: Drops both
                     drop1 = true;
                     drop2 = true;
-                }else if (cycleFinished){
+                }else if ((currentGamepad2.x && !previousGamepad2.x)&&drop2&&!afterDrop){
+                    afterDrop = true;
+                }
+
+                if (cycleFinished){
                     bucketPrime = false;
                     loadPP = false;
                     rd2drop = false;
                     drop1 = false;
                     drop2 = false;
+                    afterDrop = false;
                     cycleFinished = false;
                 }
 
@@ -271,9 +294,15 @@ public class NormalFrontTeleOpLucasRevised extends LinearOpMode {
                 }
                 if (drop2){
                     claw1Pos = 0;
+                }
+                if (afterDrop){
                     ppPos = ppGet;
+                    flipPos = flip_vert;
                     cycleFinished = true;
                 }
+
+
+
 
 
                 //Actuate Servos
@@ -299,18 +328,21 @@ public class NormalFrontTeleOpLucasRevised extends LinearOpMode {
 //                telemetry.addData("ppPos", ppPos);
 
                 telemetry.addLine("States In Order");
+                telemetry.addData("gp1b current",currentGamepad1.b);
+                telemetry.addData("gp1b prev",previousGamepad1.b);
+                telemetry.addData("gp2x current",currentGamepad2.x);
+                telemetry.addData("gp2x current",currentGamepad2.x);
+
                 telemetry.addData("BucketPrime",bucketPrime);
                 telemetry.addData("loadPP",loadPP);
                 telemetry.addData("rd2drop",rd2drop);
                 telemetry.addData("drop1",drop1);
                 telemetry.addData("drop2", drop2);
+                telemetry.addData("afterDrop",afterDrop);
                 telemetry.addData("cycleFinished",cycleFinished);
 
                 telemetry.update();
 
-
-                //Variables updated per run;
-                gp2ALast = gp1ANow;// debounce
                 ext_past = gamepad2.right_trigger;
             }
 
