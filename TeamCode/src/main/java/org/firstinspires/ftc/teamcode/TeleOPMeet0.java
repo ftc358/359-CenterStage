@@ -198,7 +198,7 @@ public class TeleOPMeet0 extends LinearOpMode {
                 }
 
                 //bucket flip stuff
-                if (gamepad2.back&&!gamepad2.x){
+                if (gamepad2.dpad_left&&!gamepad2.x){
                     flipPos = flip_dump;
                 } //dumps
                 else if (gamepad2.left_trigger == 0 && !gamepad2.back &&!gamepad2.x){
@@ -217,14 +217,14 @@ public class TeleOPMeet0 extends LinearOpMode {
 
                 //lift stuff
                 if (gamepad2.right_trigger > 0){
-                    drive.lift1.setPower(gamepad2.right_trigger);
+//                    drive.lift1.setPower(gamepad2.right_trigger);
                     drive.lift2.setPower(gamepad2.right_trigger);
                 }else if (gamepad2.right_bumper){
-                    drive.lift1.setPower(liftDown);
+//                    drive.lift1.setPower(liftDown);
                     drive.lift2.setPower(liftDown);
                 }else{
-                    drive.lift1.setPower(0);
-                    drive.lift2.setPower(0);
+//                    drive.lift1.setPower(0.001);
+                    drive.lift2.setPower(0.001);
                 } //Lift motors do not  coordinate fix later
 
 
@@ -237,6 +237,10 @@ public class TeleOPMeet0 extends LinearOpMode {
 //                } else {
 //                    dBouncegp1a = false;
 //                }
+//                if (gamepad2.y){
+//                    cycleFinished = true;
+//                }
+
 
                 if ((currentGamepad2.x && !previousGamepad2.x) && !bucketPrime){
                     bucketPrime = true; //Move this to below if jake wants on one key, add timer if necc.
@@ -251,10 +255,11 @@ public class TeleOPMeet0 extends LinearOpMode {
                 } else if ((currentGamepad1.b && !previousGamepad1.b) && drop1 &&!drop2){ //Drop the Innermost Pixel
                     drop2 = true;
                 }
-                else if (gamepad2.dpad_left) { //Reset: Drops both
+                else if (gamepad2.a) {
                     drop1 = true;
                     drop2 = true;
-                }else if ((currentGamepad2.x && !previousGamepad2.x)&&drop2&&!afterDrop){
+                    afterDrop = true;
+                }else if ((currentGamepad1.b && !previousGamepad1.b)&&drop2&&!afterDrop){
                     afterDrop = true;
                 }
 
@@ -303,7 +308,11 @@ public class TeleOPMeet0 extends LinearOpMode {
 
 
 
-
+                if (gamepad1.options){
+                    drive.planeRelease.setPosition(1.0);
+                }else{
+                    drive.planeRelease.setPosition(0);
+                }
 
                 //Actuate Servos
                 drive.flip1.setPosition(flipPos);

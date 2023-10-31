@@ -323,13 +323,17 @@ public final class MecanumDrive {
         flip1.setPosition(TeleOPMeet0.flip_lift);
         flip2.setPosition(TeleOPMeet0.flip_lift);
     }
-    public void ppHold(){
+    public void clawGrab(){
         claw1.setPosition(TeleOPMeet0.claw1Grab);
         claw2.setPosition(TeleOPMeet0.claw2Grab);
     }
     public void ppBoard(){
         placerPivot1.setPosition(TeleOPMeet0.ppBoardDrop);
         placerPivot2.setPosition(TeleOPMeet0.ppBoardDrop);
+    }
+    public void ppHold(){
+        placerPivot1.setPosition(TeleOPMeet0.ppHold);
+        placerPivot2.setPosition(TeleOPMeet0.ppHold);
     }
     public void ppGround(){
         placerPivot1.setPosition(1);//as far as it can go
