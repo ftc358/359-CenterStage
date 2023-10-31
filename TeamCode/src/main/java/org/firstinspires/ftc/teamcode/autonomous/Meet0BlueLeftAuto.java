@@ -104,13 +104,14 @@ public class Meet0BlueLeftAuto extends LinearOpMode {
         sleep(1000);
         drive.bucketVertical();
         drive.ppZero();
-
+        sleep(1000);
         runBlocking( new SequentialAction(
                 drive.actionBuilder(drive.pose)
-                        .strafeTo(new Vector2d(53,55))
+                        .strafeTo(new Vector2d(22,11))
+                        .strafeTo(new Vector2d(-55,11))
                         .build()
         ));
-
+//.strafeTo(new Vector2d(53,55))
 
     }
 
