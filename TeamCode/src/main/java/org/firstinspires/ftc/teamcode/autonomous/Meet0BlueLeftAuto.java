@@ -103,6 +103,7 @@ public class Meet0BlueLeftAuto extends LinearOpMode {
         drive.dropAll();
         sleep(1000);
         drive.bucketVertical();
+        sleep(1000);
         drive.ppZero();
         sleep(1000);
         runBlocking( new SequentialAction(
