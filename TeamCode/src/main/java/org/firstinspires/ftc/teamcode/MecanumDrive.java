@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -98,7 +99,7 @@ public final class MecanumDrive {
     public DcMotor intake;
     public Servo claw1, claw2;
     public Servo flip1, flip2, ext1, ext2, placerPivot1, placerPivot2, planeRelease;
-
+    public TouchSensor liftHome;
 
     public final VoltageSensor voltageSensor;
 
@@ -198,6 +199,7 @@ public final class MecanumDrive {
          *      5: ext2
          *  Sensors:
          *      Digital:
+         *      2-3: liftHome
          *      Analog:
          *
          *  USB:
@@ -277,6 +279,8 @@ public final class MecanumDrive {
         claw1.setDirection(Servo.Direction.REVERSE);
 
         planeRelease = hardwareMap.get(Servo.class, "planeRelease");
+
+        liftHome = hardwareMap.get(TouchSensor.class,"liftHome");
 
 
         imu = hardwareMap.get(IMU.class, "imu");
