@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.teleop;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
+
+import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 @Config
 @TeleOp (name = "Meet 0 TeleOp",group = "TeleOP")
@@ -39,6 +41,12 @@ public class TeleOPMeet0 extends LinearOpMode {
 
     public static double claw1Grab = 0.38;
     public static double claw2Grab = 0.47;
+
+
+    public static double ax1_home = 0.0;
+    public static double ax2_home = 0.0;
+    public static double ax1_limit = 1.0;
+    public static double ax2_limit = 1.0;
 
 
 
