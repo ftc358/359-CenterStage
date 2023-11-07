@@ -41,6 +41,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.teleop.TeleOPMeet0;
 
 import java.lang.Math;
@@ -103,6 +104,8 @@ public final class MecanumDrive {
     public TouchSensor liftHome;
 
     public final VoltageSensor voltageSensor;
+    public LynxModule ch;
+    public LynxModule exh;
 
 
     public final IMU imu;
@@ -183,6 +186,8 @@ public final class MecanumDrive {
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
+        ch = (LynxModule) hardwareMap.get(LynxModule.class, "Control Hub");
+        exh = (LynxModule) hardwareMap.get(LynxModule.class, "Expansion Hub 5");
         /**
          * Control Hub (Right Side):
          *
@@ -285,6 +290,15 @@ public final class MecanumDrive {
         localizer = new ThreeDeadWheelLocalizer(hardwareMap, PARAMS.inPerTick);
     }
 
+    public double getTotalCurrent(){
+        return (ch.getCurrent(CurrentUnit.AMPS) + exh.getCurrent(CurrentUnit.AMPS));
+    }
+
+
+
+
+
+
 
     public void intakeOn(){
         intake.setPower(0.727);
@@ -295,6 +309,13 @@ public final class MecanumDrive {
     public void intakeOff(){
         intake.setPower(0);
     }
+
+
+
+
+
+
+
 
     public void extendZero(){
         ext1.setPosition(0);
