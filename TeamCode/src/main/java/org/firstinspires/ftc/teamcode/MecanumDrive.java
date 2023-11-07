@@ -261,19 +261,9 @@ public final class MecanumDrive {
         lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
-        intake = hardwareMap.get(DcMotor.class,"intake");
-
-        flip1 = hardwareMap.get(Servo.class,"flip1");
-        flip2 = hardwareMap.get(Servo.class,"flip2");
-        flip2.setDirection(Servo.Direction.REVERSE);
-
-        ext1 = hardwareMap.get(Servo.class,"ext1");
-        ext2 = hardwareMap.get(Servo.class,"ext2");
-        ext2.setDirection(Servo.Direction.REVERSE);
-
         placerPivot1 = hardwareMap.get(Servo.class,"placerPivot1");
         placerPivot2 = hardwareMap.get(Servo.class,"placerPivot2");
-        placerPivot1.setDirection(Servo.Direction.REVERSE);
+        placerPivot2.setDirection(Servo.Direction.REVERSE);
 
         claw1 = hardwareMap.get(Servo.class,"claw1");
         claw2 = hardwareMap.get(Servo.class,"claw2");

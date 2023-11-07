@@ -12,8 +12,10 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 @Config
-@TeleOp (name = "Meet 0 TeleOp",group = "TeleOP")
+@TeleOp (name = "Meet 1 TeleOp",group = "TeleOP")
 public class TeleOPMeet1 extends LinearOpMode {
+ // saved on codeshare.io/lmaocopeharderpeopleofpaper727
+
 
     //Dashboard Vars
     public static float rapidTrigger_thr = 0.1f;
@@ -56,9 +58,13 @@ public class TeleOPMeet1 extends LinearOpMode {
     public double ppPos = 0;
 
     //States
+    int state = 0;
+
     boolean bucketPrime = false;
     boolean loadPP = false;
-    boolean rd2drop = false;
+    boolean flingup = false;
+    boolean dropOnBoard = false;
+    boolean dropOnGround = false;
     boolean drop1 = false;
     boolean drop2 = false;
     boolean cycleFinished = false;
@@ -120,15 +126,20 @@ public class TeleOPMeet1 extends LinearOpMode {
 
 
         waitForStart();
+        int bucketState = 0;
+        int transferState = 0;
         while (opModeIsActive()) {
+            //trust me bro - jonathan
+
+
 
             //Gamepad States
             previousGamepad1.copy(currentGamepad1);
             previousGamepad2.copy(currentGamepad2);
-
             currentGamepad1.copy(gamepad1);
             currentGamepad2.copy(gamepad2);
 
+            //C
             currentVoltage = drive.voltageSensor.getVoltage();//Could Use for Something
 
 
@@ -136,25 +147,25 @@ public class TeleOPMeet1 extends LinearOpMode {
 
                 //Curving Controls.
             if (gamepad1.left_stick_y<-0.1){
-                straight = -applyStrongerControlCurve(gamepad1.left_stick_y) +0.12;
+                straight = -applyStrongerControlCurve(gamepad1.left_stick_y) +0.26;
             } else if (gamepad1.left_stick_y>0.1){
-                straight = -applyStrongerControlCurve(gamepad1.left_stick_y) -0.12;
+                straight = -applyStrongerControlCurve(gamepad1.left_stick_y) -0.26;
             } else{
                 straight = 0;
             }
 
             if (gamepad1.left_stick_x<-0.1){
-                strafe = -applyStrongerControlCurve(gamepad1.left_stick_x) +0.22;
+                strafe = -applyStrongerControlCurve(gamepad1.left_stick_x) +0.26;
             } else if (gamepad1.left_stick_x>0.1){
-                strafe = -applyStrongerControlCurve(gamepad1.left_stick_x) -0.22;
+                strafe = -applyStrongerControlCurve(gamepad1.left_stick_x) -0.26;
             } else{
                 strafe = 0;
             }
 
             if (gamepad1.right_stick_x<0){
-                turn = -applyStrongerControlCurve(gamepad1.right_stick_x) +0.12;
+                turn = -applyStrongerControlCurve(gamepad1.right_stick_x) +0.26;
             } else if (gamepad1.right_stick_x>0){
-                turn = -applyStrongerControlCurve(gamepad1.right_stick_x) -0.12;
+                turn = -applyStrongerControlCurve(gamepad1.right_stick_x) -0.26;
             } else{
                 turn = 0;
             }
@@ -183,7 +194,7 @@ public class TeleOPMeet1 extends LinearOpMode {
             }
 
 
-            //Bucket Flip, Removed gamepad2.x conditionals cus redundant
+            //Bucket Flip
             if (currentGamepad2.dpad_left){
                 flipPos = flip_dump;
             } else if (currentGamepad2.left_trigger == 0 && !currentGamepad2.dpad_left){
@@ -194,9 +205,7 @@ public class TeleOPMeet1 extends LinearOpMode {
             } else if (((ext_past - gamepad2.left_trigger) > rapidTrigger_thr)&& !gamepad2.dpad_left){
                 //extension retract
                 flipPos = flip_half;
-            };
-
-
+            }
 
             //Lift
             if (currentGamepad2.right_trigger > 0){
@@ -210,51 +219,83 @@ public class TeleOPMeet1 extends LinearOpMode {
                 drive.lift2.setPower(liftIdle);
             } //This idle power overheats the motor. Caution.
 
+            //transfer stuff
+
 
             if ((currentGamepad2.x && !previousGamepad2.x) && !bucketPrime){
                 bucketPrime = true;
-            } else if ((currentGamepad2.x && !previousGamepad2.x) && bucketPrime &&!loadPP){
+            }
+            else if ((currentGamepad2.x && !previousGamepad2.x) && bucketPrime &&!loadPP){
                 loadPP = true;
-            } else if ((currentGamepad2.x && !previousGamepad2.x) && loadPP &&!rd2drop){
-                rd2drop = true;
-
-            } else if ((currentGamepad1.b && !previousGamepad1.b) && rd2drop &&!drop1){ //Drop the Outermost Pixel
+            }
+            else if ((currentGamepad2.x && !previousGamepad2.x) && loadPP &&!flingup){
+                flingup = true;
+            }
+            else if ((currentGamepad2.y && !previousGamepad2.y) && flingup &&!dropOnGround){
+                dropOnGround = true;
+                dropOnBoard = false;
+            }
+            else if ((currentGamepad2.x && !previousGamepad2.x) && flingup &&!dropOnBoard){
+                dropOnBoard = true;
+                dropOnGround = false;
+            }
+            else if ((currentGamepad1.b && !previousGamepad1.b) && (dropOnBoard||dropOnGround) &&!drop1){ //Drop the Outermost Pixel
                 drop1 = true;
-            } else if ((currentGamepad1.b && !previousGamepad1.b) && drop1 &&!drop2){ //Drop the Innermost Pixel
+            }
+            else if ((currentGamepad1.b && !previousGamepad1.b) && drop1 &&!drop2){ //Drop the Innermost Pixel
                 drop2 = true;
             }
             else if (gamepad2.a) {
                 drop1 = true;
                 drop2 = true;
                 afterDrop = true;
-            }else if ((currentGamepad1.b && !previousGamepad1.b)&&drop2&&!afterDrop){
+            }
+            else if ((currentGamepad1.b && !previousGamepad1.b)&&drop2&&!afterDrop){
                 afterDrop = true;
             }
 
+
+            //transfer stuff end
+
+
+
             if (cycleFinished){
                 bucketPrime = false;
+                flingup = false;
                 loadPP = false;
-                rd2drop = false;
+                dropOnBoard = false;
                 drop1 = false;
                 drop2 = false;
                 afterDrop = false;
                 cycleFinished = false;
             }
 
-
-
             if (bucketPrime){
                 ppPos = 0;
                 flipPos = flip_lift;
             }
             if (loadPP){
-                ppPos = ppHold;
-                flipPos = flip_half;//You probably wanna either kill the servo or make it retract more here
+                ppPos = 0.1;
+
+                //flipPos = flip_lift;
+                //You probably wanna either kill the servo or make it retract more here
                 //Time the recession of the flip bucket to coordinate with the rotational x component of pp.
+            }
+            if (flingup){
+                ppPos = ppHold;
+            }
+            if (dropOnGround){
+                ppPos = 1.0;
                 claw1Pos = claw1Grab;//No Pause for Claw lock, add timer if issue
                 claw2Pos = claw2Grab;
+                flipPos = flip_vert;
+                if (!drop1) {
+                    gamepad1.runRumbleEffect(drop1Ready);
+                }
             }
-            if (rd2drop){
+            if (dropOnBoard){
+                claw1Pos = claw1Grab;//No Pause for Claw lock, add timer if issue
+                claw2Pos = claw2Grab;
                 flipPos = flip_vert;
                 ppPos = ppBoardDrop;
                 if (!drop1) {
@@ -270,12 +311,11 @@ public class TeleOPMeet1 extends LinearOpMode {
             if (drop2){
                 claw1Pos = 0;
             }
-            if (afterDrop){
+            if (afterDrop) {
                 ppPos = ppGet;
                 flipPos = flip_vert;
                 cycleFinished = true;
             }
-
 
             //Attack Plan R
             if (currentGamepad1.options){
