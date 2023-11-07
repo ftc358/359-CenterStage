@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 @Config
 @Disabled
 @TeleOp (name = "Meet 0 TeleOp",group = "TeleOP")
-public class TeleOPMeet1V2 extends LinearOpMode {
+public class ARCHIVEDTeleOPMeet0 extends LinearOpMode {
 
     //Dashboard Vars
     public static float rapidTrigger_thr = 0.1f;
