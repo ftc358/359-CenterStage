@@ -41,8 +41,8 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.teleop.ARCHIVEDTeleOPMeet0;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.teamcode.teleop.TeleOPMeet0;
 
 import java.lang.Math;
 import java.util.Arrays;
@@ -99,14 +99,12 @@ public final class MecanumDrive {
     public final DcMotorEx leftFront, leftBack, rightBack, rightFront;
     public DcMotorEx lift1, lift2;
     public DcMotor intake;
-    public Servo claw1, claw2;
-    public Servo flip1, flip2, ext1, ext2, placerPivot1, placerPivot2, planeRelease;
+    public Servo claw1, claw2, flip1, flip2, ext1, ext2, placerPivot1, placerPivot2, planeRelease;
     public TouchSensor liftHome;
 
     public final VoltageSensor voltageSensor;
     public LynxModule ch;
     public LynxModule exh;
-
 
     public final IMU imu;
 
@@ -209,8 +207,8 @@ public final class MecanumDrive {
          *      Analog:
          *
          *  USB:
-         *      Webcam Front
-         *      Webcam Back
+         *      Webcam 1 (Front)
+         *      Webcam 2 (Back)
          *
          *
          *  Expansion Hub (Left Side):
@@ -248,23 +246,22 @@ public final class MecanumDrive {
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        intake = hardwareMap.get(DcMotor.class,"intake");
-
-        flip1 = hardwareMap.get(Servo.class,"flip1");
-        flip2 = hardwareMap.get(Servo.class,"flip2");
-        ext1 = hardwareMap.get(Servo.class,"ext1");
-        ext2 = hardwareMap.get(Servo.class,"ext2");
-
-        flip2.setDirection(Servo.Direction.REVERSE);
-        ext2.setDirection(Servo.Direction.REVERSE);
-
         lift1 = hardwareMap.get(DcMotorEx.class, "lift1");
         lift2 = hardwareMap.get(DcMotorEx.class, "lift2");
         lift1.setDirection(DcMotorSimple.Direction.REVERSE);
         lift2.setDirection(DcMotorSimple.Direction.REVERSE);
+
         lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intake = hardwareMap.get(DcMotor.class,"intake");
 
+        flip1 = hardwareMap.get(Servo.class,"flip1");
+        flip2 = hardwareMap.get(Servo.class,"flip2");
+        flip2.setDirection(Servo.Direction.REVERSE);
+
+        ext1 = hardwareMap.get(Servo.class,"ext1");
+        ext2 = hardwareMap.get(Servo.class,"ext2");
+        ext2.setDirection(Servo.Direction.REVERSE);
 
         placerPivot1 = hardwareMap.get(Servo.class,"placerPivot1");
         placerPivot2 = hardwareMap.get(Servo.class,"placerPivot2");
@@ -278,8 +275,8 @@ public final class MecanumDrive {
 
         liftHome = hardwareMap.get(TouchSensor.class,"liftHome");
 
-
         imu = hardwareMap.get(IMU.class, "imu");
+
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
                 RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
@@ -310,66 +307,60 @@ public final class MecanumDrive {
         intake.setPower(0);
     }
 
-
-
-
-
-
-
-
-    public void extendZero(){
-        ext1.setPosition(0);
-        ext2.setPosition(0);
-    }
-    public void extendOut(double ServoPos){//Maybe should do a ServoPos to inch conversion?
-        ext1.setPosition(ServoPos);
-        ext2.setPosition(ServoPos);
-    }
-    public void bucketGetPixel(){
-        flip1.setPosition(TeleOPMeet0.flip_intake);
-        flip2.setPosition(TeleOPMeet0.flip_intake);
-    }
-    public void bucketVertical(){
-        flip1.setPosition(TeleOPMeet0.flip_vert);
-        flip2.setPosition(TeleOPMeet0.flip_vert);
-        placerPivot1.setPosition(TeleOPMeet0.ppGet);
-        placerPivot2.setPosition(TeleOPMeet0.ppGet);
-    }
-    public void bucketTransfer(){
-        flip1.setPosition(TeleOPMeet0.flip_lift);
-        flip2.setPosition(TeleOPMeet0.flip_lift);
-    }
-    public void clawGrab(){
-        claw1.setPosition(TeleOPMeet0.claw1Grab);
-        claw2.setPosition(TeleOPMeet0.claw2Grab);
-    }
-    public void ppBoard(){
-        placerPivot1.setPosition(TeleOPMeet0.ppBoardDrop);
-        placerPivot2.setPosition(TeleOPMeet0.ppBoardDrop);
-    }
-    public void ppHold(){
-        placerPivot1.setPosition(TeleOPMeet0.ppHold);
-        placerPivot2.setPosition(TeleOPMeet0.ppHold);
-    }
-    public void ppGround(){
-        placerPivot1.setPosition(1);//as far as it can go
-        placerPivot2.setPosition(1);
-    }
-    public void ppZero(){
-        placerPivot1.setPosition(0);//as far as it can go
-        placerPivot2.setPosition(0);
-    }
-    public void dropOut(){
-        claw2.setPosition(0);
-    }
-    public void dropAll(){
-        claw2.setPosition(0);
-        claw1.setPosition(0);
-    }
-    public void homeAll(){
-        bucketVertical();
-        dropAll();
-    }
+//    public void extendZero(){
+//        ext1.setPosition(0);
+//        ext2.setPosition(0);
+//    }
+//    public void extendOut(double ServoPos){//Maybe should do a ServoPos to inch conversion?
+//        ext1.setPosition(ServoPos);
+//        ext2.setPosition(ServoPos);
+//    }
+//    public void bucketGetPixel(){
+//        flip1.setPosition(ARCHIVEDTeleOPMeet0.flip_intake);
+//        flip2.setPosition(ARCHIVEDTeleOPMeet0.flip_intake);
+//    }
+//    public void bucketVertical(){
+//        flip1.setPosition(ARCHIVEDTeleOPMeet0.flip_vert);
+//        flip2.setPosition(ARCHIVEDTeleOPMeet0.flip_vert);
+//        placerPivot1.setPosition(ARCHIVEDTeleOPMeet0.ppGet);
+//        placerPivot2.setPosition(ARCHIVEDTeleOPMeet0.ppGet);
+//    }
+//    public void bucketTransfer(){
+//        flip1.setPosition(ARCHIVEDTeleOPMeet0.flip_lift);
+//        flip2.setPosition(ARCHIVEDTeleOPMeet0.flip_lift);
+//    }
+//
+//    public void clawGrab(){
+//        claw1.setPosition(TeleOPMeet1V2.claw1Grab);
+//        claw2.setPosition(ARCHIVEDTeleOPMeet0.claw2Grab);
+//    }
+//    public void ppBoard(){
+//        placerPivot1.setPosition(ARCHIVEDTeleOPMeet0.ppBoardDrop);
+//        placerPivot2.setPosition(ARCHIVEDTeleOPMeet0.ppBoardDrop);
+//    }
+//    public void ppHold(){
+//        placerPivot1.setPosition(ARCHIVEDTeleOPMeet0.ppHold);
+//        placerPivot2.setPosition(ARCHIVEDTeleOPMeet0.ppHold);
+//    }
+//    public void ppGround(){
+//        placerPivot1.setPosition(1);//as far as it can go
+//        placerPivot2.setPosition(1);
+//    }
+//    public void ppZero(){
+//        placerPivot1.setPosition(0);//as far as it can go
+//        placerPivot2.setPosition(0);
+//    }
+//    public void dropOut(){
+//        claw2.setPosition(0);
+//    }
+//    public void dropAll(){
+//        claw2.setPosition(0);
+//        claw1.setPosition(0);
+//    }
+//    public void homeAll(){
+//        bucketVertical();
+//        dropAll();
+//    }
 
 
 
