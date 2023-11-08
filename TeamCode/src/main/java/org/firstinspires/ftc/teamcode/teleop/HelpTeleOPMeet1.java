@@ -24,7 +24,7 @@ public class HelpTeleOPMeet1 extends LinearOpMode {
     public static double rapidTrigger_thr = 0.1;
     public static double extension_sens = 0.727;
 
-    public static double flip_lift = 0.07;
+    public static double flip_lift = 0;
     public static double flip_intake = 0.40;
     public static double flip_half = 0.30;
     public static double flip_dump = 0.6;
@@ -75,6 +75,7 @@ public class HelpTeleOPMeet1 extends LinearOpMode {
     double rightFrontC = 0;
     double rightBackC = 0;
     double maxPower = 0;
+    double fiveC = 0;
 
 
     Gamepad.RumbleEffect batteryCritical, drop1Ready, drop2Ready;
@@ -83,6 +84,7 @@ public class HelpTeleOPMeet1 extends LinearOpMode {
     Gamepad previousGamepad1 = new Gamepad();
     Gamepad previousGamepad2 = new Gamepad();
 
+    boolean testingScheme;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -103,7 +105,6 @@ public class HelpTeleOPMeet1 extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
 
 
-
         ext_past = 0;
 
         drive.lift1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -117,19 +118,34 @@ public class HelpTeleOPMeet1 extends LinearOpMode {
             telemetry.update();
         }
 
-        int transferState = 0;
-        waitForStart();
 
+
+        int transferState = 0;
+
+        while (opModeInInit() && !opModeIsActive()){
+            if (gamepad1.ps){
+                telemetry.addLine("Control Scheme: Testing");
+                testingScheme = true;
+                gamepad1.rumble(2000);
+            }
+        }
+        waitForStart();
         while (opModeIsActive()) {
             //trust me bro - jonathan
-            //in case i trust - lucas
+            //in switchCase i trust - lucas
+            if (testingScheme){
+                telemetry.addLine("CONTROLLER A ONLY");
+                previousGamepad1.copy(currentGamepad1);
+                previousGamepad2.copy(currentGamepad1);
+                currentGamepad1.copy(gamepad1);
+                currentGamepad2.copy(gamepad1);}
+            else {
+                previousGamepad1.copy(currentGamepad1);
+                previousGamepad2.copy(currentGamepad2);
+                currentGamepad1.copy(gamepad1);
+                currentGamepad2.copy(gamepad2);
+            }
 
-
-            //Gamepad States
-            previousGamepad1.copy(currentGamepad1);
-            previousGamepad2.copy(currentGamepad2);
-            currentGamepad1.copy(gamepad1);
-            currentGamepad2.copy(gamepad2);
 
             //Power Systems
             currentVoltage = drive.voltageSensor.getVoltage();//Could Use for Something
@@ -137,11 +153,10 @@ public class HelpTeleOPMeet1 extends LinearOpMode {
             leftBackC = drive.leftBack.getCurrent(CurrentUnit.AMPS);
             rightFrontC = drive.rightFront.getCurrent(CurrentUnit.AMPS);
             rightBackC = drive.rightBack.getCurrent(CurrentUnit.AMPS);
-            drivetrainC = leftFrontC+leftBackC+rightFrontC+rightBackC;
-            driveTrainPower = currentVoltage*drivetrainC;
-
+            drivetrainC = leftFrontC + leftBackC + rightFrontC + rightBackC;
+            fiveC = drive.ch.getCurrent(CurrentUnit.AMPS) +drive.exh.getCurrent(CurrentUnit.AMPS);
             driveTrainPower = currentVoltage * drivetrainC;
-            maxPower = (driveTrainPower > maxPower)?driveTrainPower:maxPower;
+            maxPower = (driveTrainPower > maxPower) ? driveTrainPower : maxPower;
 
             telemetry.addLine("Powertrain Statistics");
             telemetry.addData("Left Front Current (A)", leftFrontC);
@@ -149,60 +164,87 @@ public class HelpTeleOPMeet1 extends LinearOpMode {
             telemetry.addData("Right Front Current (A)", rightFrontC);
             telemetry.addData("Right Back Current (A)", rightBackC);
             telemetry.addLine();
-            telemetry.addData("Drive Current (A)",drivetrainC);
-            telemetry.addData("Power (W)",driveTrainPower);
-            telemetry.addData("Max Power (W)",maxPower);
+            telemetry.addData("Drive Current (A)", drivetrainC);
+            telemetry.addData("Total Current (A)", fiveC);
+            telemetry.addData("Power (W)", driveTrainPower);
+            telemetry.addData("Max Drive Power (W)", maxPower);
 
 
-
-
-
-
-            //Curving Controls. This is extremely unecessary but it saves cycles in true Lucas Useless fashion
-            straight = (-gamepad1.left_stick_y > 0.1) ? (Math.pow(-gamepad1.left_stick_x, 3) + 0.26) : (-gamepad1.left_stick_x < -0.1) ? (Math.pow(-gamepad1.left_stick_x, 3) - 0.26) : 0;
+            //Curving Controls. This is extremely unecessary but it saves space
+            straight = (-gamepad1.left_stick_y > 0.1) ? (Math.pow(-gamepad1.left_stick_y, 3) + 0.26) : (-gamepad1.left_stick_y < -0.1) ? (Math.pow(-gamepad1.left_stick_y, 3) - 0.26) : 0;
             strafe = (gamepad1.left_stick_x > 0.1) ? (Math.pow(gamepad1.left_stick_x, 3) + 0.26) : (gamepad1.left_stick_x < -0.1) ? (Math.pow(gamepad1.left_stick_x, 3) - 0.26) : 0;
             turn = (gamepad1.right_stick_x > 0.1) ? (Math.pow(gamepad1.right_stick_x, 5) + 0.26) : (gamepad1.right_stick_x < -0.1) ? (Math.pow(gamepad1.right_stick_x, 5) - 0.26) : 0;
 
-            drive.setDrivePowers(new PoseVelocity2d(new Vector2d(straight, strafe), turn));
+
+            drive.setDrivePowers(new PoseVelocity2d(new Vector2d(straight, -strafe), -turn));
             drive.updatePoseEstimate();
 
-
-            //Intake Trigger
-            intakePower = (currentGamepad2.left_trigger >0 && !currentGamepad2.dpad_left) ? intakeSpeed : (currentGamepad2.left_bumper || currentGamepad2.dpad_left) ? -1 : 0;
-
-            //Extension Trigger
-            extPos = (currentGamepad2.left_trigger >= 0.1) ? (1.0 - extension_sens + currentGamepad2.left_trigger * extension_sens) * 0.5 : 0;
-
-            //Lift Trigger
-            liftPower = (currentGamepad2.right_trigger >0)? currentGamepad2.right_trigger : (currentGamepad2.right_bumper) ? liftDown : liftIdle;
-
-            //Transfer States
-            if (currentGamepad2.x && !previousGamepad2.x) {
-                transferState = (transferState + 1) % 8;
-            } else if (currentGamepad1.b && !previousGamepad1.b && transferState == 5) {
-                transferState = 7;
-            } else if (gamepad2.a) {
-                transferState = 7;
+            //Bucket Flip
+            if (currentGamepad2.dpad_left) {
+                flipPos = flip_dump;
+            } else if (currentGamepad2.left_trigger == 0 && !currentGamepad2.dpad_left) {
+                flipPos = flip_vert;
+            } else if (((currentGamepad2.left_trigger - ext_past) > 0) && !currentGamepad2.dpad_left) {
+                //extension trigger
+                flipPos = flip_intake;
+            } else if (((ext_past - currentGamepad2.left_trigger) > rapidTrigger_thr) && !currentGamepad2.dpad_left) {
+                //extension retract
+                flipPos = flip_half;
             }
 
-            //Transfer Switch-Case
+            //Intake Trigger
+            intakePower = (currentGamepad2.left_trigger > 0 && !currentGamepad2.dpad_left) ? intakeSpeed : (currentGamepad2.left_bumper || currentGamepad2.dpad_left) ? -1 : 0;
+
+            //Extension Trigger
+            extPos = (currentGamepad2.left_trigger >= 0.1) ? (1.0 - extension_sens + currentGamepad2.left_trigger * extension_sens) * 0.8 : 0;
+
+            //Lift Trigger
+            liftPower = (currentGamepad2.right_trigger > 0) ? currentGamepad2.right_trigger : (currentGamepad2.right_bumper) ? liftDown : liftIdle;
+
+            //Attack Plan R
+            planeReleasePos = currentGamepad1.options ? 1.0 : 0;
+
+
+            //Transfer States
+            if (currentGamepad2.x && !previousGamepad2.x && (transferState<=4 ||transferState==6)) {
+                transferState = (transferState + 1) % 7 ;
+            } else if (currentGamepad1.a && !previousGamepad1.a && (transferState == 4 || transferState == 5 || transferState == 6)){
+                transferState = (transferState + 1) % 7;
+            }
+            else if (currentGamepad1.b && !previousGamepad1.b && transferState == 5) {
+                transferState = 0;
+            } else if (currentGamepad2.a) {
+                transferState = 0;
+            }
+
+                            //Transfer Switch-Case
             switch (transferState) {
                 case 0:
+                    ppPos = ppGet;
+                    claw1Pos = 0;
+                    claw2Pos = 0;
                     break;
                 case 1:
                     ppPos = 0;
                     flipPos = flip_lift;
+                    claw1Pos = 0;
+                    claw2Pos = 0;
                     break;
                 case 2:
                     ppPos = 0.1;
+                    flipPos = flip_lift;
+                    claw1Pos = claw1Grab;
+                    claw2Pos = claw2Grab;
                     break;
                 case 3: //Goes to Holding Position
                     ppPos = ppHold;
+                    claw1Pos = claw1Grab;
+                    claw2Pos = claw2Grab;
                     break;
                 case 4: //Goes to Board Dropping Position
                     claw1Pos = claw1Grab;
                     claw2Pos = claw2Grab;
-                    flipPos = flip_vert;
+                    flipPos = flip_lift;
                     ppPos = ppBoardDrop;
                     gamepad1.runRumbleEffect(drop1Ready);
                     break;
@@ -212,29 +254,11 @@ public class HelpTeleOPMeet1 extends LinearOpMode {
                     break;
                 case 6: //Drops the Innermost
                     claw1Pos = 0;
-                    break;
-                case 7: //Resets
-                    ppPos = ppGet;
-                    flipPos = flip_vert;
+                    claw2Pos = 0;
                     break;
             }
 
-            //Attack Plan R
-            planeReleasePos = currentGamepad1.options ? 1.0 : 0;
 
-
-            //Bucket Flip
-            if (currentGamepad2.dpad_left) {
-                flipPos = flip_dump;
-            } else if (currentGamepad2.left_trigger == 0 && !currentGamepad2.dpad_left) {
-                flipPos = flip_vert;
-            } else if (((gamepad2.left_trigger - ext_past) > 0) && !gamepad2.dpad_left) {
-                //extension trigger
-                flipPos = flip_intake;
-            } else if (((ext_past - gamepad2.left_trigger) > rapidTrigger_thr) && !gamepad2.dpad_left) {
-                //extension retract
-                flipPos = flip_half;
-            }
 
 
 
@@ -271,9 +295,13 @@ public class HelpTeleOPMeet1 extends LinearOpMode {
                 gamepad1.runRumbleEffect(batteryCritical);
                 gamepad2.runRumbleEffect(batteryCritical);
             }
-            telemetry.update();
             ext_past = currentGamepad2.right_trigger;
+
+
+            telemetry.update();
+
         }
 
+        }
     }
-}
+
