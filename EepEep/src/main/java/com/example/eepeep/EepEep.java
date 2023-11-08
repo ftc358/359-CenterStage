@@ -16,12 +16,25 @@ public class EepEep {
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(12, -60, toRadians(90)))
+                        drive.trajectorySequenceBuilder(new Pose2d(-36, -60, toRadians(90)))
                                 //.splineToLinearHeading(new Pose2d(49, -25,Math.toRadians(0)),Math.toRadians(178))
                                 //new SequentialAction()
                                 //
                                 //.strafeTo(new Vector2d(-60, -36))
-                                .splineToLinearHeading(new Pose2d(9, -30, Math.toRadians(0)), 90)
+                                .splineToLinearHeading(new Pose2d(7-48, -32, toRadians(0)), 90)
+                                .strafeTo(new Vector2d(-38,0))
+                                .splineToLinearHeading(new Pose2d(49, -23.5, toRadians(178)), toRadians(0))
+                                .strafeTo(new Vector2d(53,-55))
+
+                                //.splineToLinearHeading(new Pose2d(-39, -30, Math.toRadians(0)), 0)
+
+                                //.strafeTo(new Vector2d(-24,-37))
+                                //.strafeTo(new Vector2d(-38,0))
+                                //.splineToLinearHeading(new Pose2d(49, 27,Math.toRadians(180)), Math.toRadians(0))
+                               // .strafeTo(new Vector2d(49,-37))
+                               //.splineToLinearHeading(new Pose2d(49, -37, toRadians(178)), toRadians(0))
+
+
                                 .build()
                 );
 
