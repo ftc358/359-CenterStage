@@ -80,19 +80,19 @@ public class Meet0RedRightAuto extends LinearOpMode {
         if (color == 1) {
             runBlocking(       new SequentialAction(
                     drive.actionBuilder(drive.pose)
-                            .splineToLinearHeading(new Pose2d(49, -23.5, toRadians(178)), toRadians(0))
+                            .splineToLinearHeading(new Pose2d(47, -23.5, toRadians(178)), toRadians(0))
                             .build()
             ));
         } else if (color ==2){
             runBlocking(       new SequentialAction(
                     drive.actionBuilder(drive.pose)
-                            .splineToLinearHeading(new Pose2d(49, -32, toRadians(178)), toRadians(0))
+                            .splineToLinearHeading(new Pose2d(47, -32, toRadians(178)), toRadians(0))
                             .build()
             ));
         } else if (color == 3 || color == 0) {
             runBlocking(       new SequentialAction(
                     drive.actionBuilder(drive.pose)
-                            .splineToLinearHeading(new Pose2d(49, -37, toRadians(178)), toRadians(0))
+                            .splineToLinearHeading(new Pose2d(47, -37, toRadians(178)), toRadians(0))
                             .build()
             ));
         }

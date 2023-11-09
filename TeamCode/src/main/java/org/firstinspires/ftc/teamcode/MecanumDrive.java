@@ -307,60 +307,60 @@ public final class MecanumDrive {
         intake.setPower(0);
     }
 
-//    public void extendZero(){
-//        ext1.setPosition(0);
-//        ext2.setPosition(0);
-//    }
-//    public void extendOut(double ServoPos){//Maybe should do a ServoPos to inch conversion?
-//        ext1.setPosition(ServoPos);
-//        ext2.setPosition(ServoPos);
-//    }
-//    public void bucketGetPixel(){
-//        flip1.setPosition(ARCHIVEDTeleOPMeet0.flip_intake);
-//        flip2.setPosition(ARCHIVEDTeleOPMeet0.flip_intake);
-//    }
-//    public void bucketVertical(){
-//        flip1.setPosition(ARCHIVEDTeleOPMeet0.flip_vert);
-//        flip2.setPosition(ARCHIVEDTeleOPMeet0.flip_vert);
-//        placerPivot1.setPosition(ARCHIVEDTeleOPMeet0.ppGet);
-//        placerPivot2.setPosition(ARCHIVEDTeleOPMeet0.ppGet);
-//    }
-//    public void bucketTransfer(){
-//        flip1.setPosition(ARCHIVEDTeleOPMeet0.flip_lift);
-//        flip2.setPosition(ARCHIVEDTeleOPMeet0.flip_lift);
-//    }
-//
-//    public void clawGrab(){
-//        claw1.setPosition(TeleOPMeet1V2.claw1Grab);
-//        claw2.setPosition(ARCHIVEDTeleOPMeet0.claw2Grab);
-//    }
-//    public void ppBoard(){
-//        placerPivot1.setPosition(ARCHIVEDTeleOPMeet0.ppBoardDrop);
-//        placerPivot2.setPosition(ARCHIVEDTeleOPMeet0.ppBoardDrop);
-//    }
-//    public void ppHold(){
-//        placerPivot1.setPosition(ARCHIVEDTeleOPMeet0.ppHold);
-//        placerPivot2.setPosition(ARCHIVEDTeleOPMeet0.ppHold);
-//    }
-//    public void ppGround(){
-//        placerPivot1.setPosition(1);//as far as it can go
-//        placerPivot2.setPosition(1);
-//    }
-//    public void ppZero(){
-//        placerPivot1.setPosition(0);//as far as it can go
-//        placerPivot2.setPosition(0);
-//    }
-//    public void dropOut(){
-//        claw2.setPosition(0);
-//    }
-//    public void dropAll(){
-//        claw2.setPosition(0);
-//        claw1.setPosition(0);
-//    }
-//    public void homeAll(){
-//        bucketVertical();
-//        dropAll();
-//    }
+    public void extendZero(){
+        ext1.setPosition(0);
+        ext2.setPosition(0);
+    }
+    public void extendOut(double ServoPos){//Maybe should do a ServoPos to inch conversion?
+        ext1.setPosition(ServoPos);
+        ext2.setPosition(ServoPos);
+    }
+    public void bucketGetPixel(){
+        flip1.setPosition(ARCHIVEDTeleOPMeet0.flip_intake);
+        flip2.setPosition(ARCHIVEDTeleOPMeet0.flip_intake);
+    }
+    public void bucketVertical(){
+        flip1.setPosition(ARCHIVEDTeleOPMeet0.flip_vert);
+        flip2.setPosition(ARCHIVEDTeleOPMeet0.flip_vert);
+        placerPivot1.setPosition(ARCHIVEDTeleOPMeet0.ppGet);
+        placerPivot2.setPosition(ARCHIVEDTeleOPMeet0.ppGet);
+    }
+    public void bucketTransfer(){
+        flip1.setPosition(ARCHIVEDTeleOPMeet0.flip_lift);
+        flip2.setPosition(ARCHIVEDTeleOPMeet0.flip_lift);
+    }
+
+    public void clawGrab(){
+        claw1.setPosition(ARCHIVEDTeleOPMeet0.claw1Grab);
+        claw2.setPosition(ARCHIVEDTeleOPMeet0.claw2Grab);
+    }
+    public void ppBoard(){
+        placerPivot1.setPosition(ARCHIVEDTeleOPMeet0.ppBoardDrop);
+        placerPivot2.setPosition(ARCHIVEDTeleOPMeet0.ppBoardDrop);
+    }
+    public void ppHold(){
+        placerPivot1.setPosition(ARCHIVEDTeleOPMeet0.ppHold);
+        placerPivot2.setPosition(ARCHIVEDTeleOPMeet0.ppHold);
+    }
+    public void ppGround(){
+        placerPivot1.setPosition(1);//as far as it can go
+        placerPivot2.setPosition(1);
+    }
+    public void ppZero(){
+        placerPivot1.setPosition(0);//as far as it can go
+        placerPivot2.setPosition(0);
+    }
+    public void dropOut(){
+        claw2.setPosition(0);
+    }
+    public void dropAll(){
+        claw2.setPosition(0);
+        claw1.setPosition(0);
+    }
+    public void homeAll(){
+        bucketVertical();
+        dropAll();
+    }
 
 
 
