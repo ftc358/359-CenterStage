@@ -12,6 +12,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 public class RedDetectionRight implements VisionProcessor {
@@ -39,14 +40,14 @@ public class RedDetectionRight implements VisionProcessor {
     public static double thresh = 0.022;
 
     static final Rect LEFT_ROI = new Rect(
-            new Point(140, 200),
-            new Point(140+80, 200+75));
+            new Point(160, 130),
+            new Point(160+80, 140+75));
     static final Rect CENTER_ROI = new Rect(
-            new Point(230,200),
-            new Point(230+90,200+75));
+            new Point(250,100),
+            new Point(250+90,100+75));
     static final Rect RIGHT_ROI = new Rect(
-            new Point(320, 200),
-            new Point(320+70, 200+75));
+            new Point(360, 110),
+            new Point(360+70, 130+75));
 
     Scalar No = new Scalar(255, 0, 0);
     Scalar Yes = new Scalar(0, 255, 0);
@@ -64,11 +65,8 @@ public class RedDetectionRight implements VisionProcessor {
 
     @Override
     public Object processFrame(Mat frame, long captureTimeNanos) {
-        Core.rotate(frame, frame, Core.ROTATE_180);
-
-
+        Imgproc.blur(frame,frame, new Size(4,4));
         Imgproc.cvtColor(frame, mat, Imgproc.COLOR_RGB2HSV);
-
 
 //        Core.inRange(mat, lowBlueHSV, highBlueHSV, mat);
         Core.inRange(mat, lower_red1,upper_red1,mat);

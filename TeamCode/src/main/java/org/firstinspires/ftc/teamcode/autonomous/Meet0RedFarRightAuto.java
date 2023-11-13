@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -19,6 +20,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 
 @Autonomous(name = "Meet 0 Autonomous Red Far Right",group = "Autonomous")
+@Disabled
 public class Meet0RedFarRightAuto extends LinearOpMode {
     private VisionPortal visionPortal;
     private AprilTagProcessor aprilTagProcessor;
@@ -73,7 +75,7 @@ public class Meet0RedFarRightAuto extends LinearOpMode {
         sleep(2000);
         drive.dropOut();
         sleep(1000);
-        drive.ppBoard();
+        drive.ppHold();
 
         if (color == 1) {
             runBlocking(       new SequentialAction(
@@ -100,6 +102,7 @@ public class Meet0RedFarRightAuto extends LinearOpMode {
 
 
         //.strafeTo(new Vector2d(-60, -36))
+                drive.ppBoard();
                 sleep(1000);
                 drive.dropAll();
                 sleep(1000);

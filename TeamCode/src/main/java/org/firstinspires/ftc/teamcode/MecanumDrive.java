@@ -31,6 +31,7 @@ import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -50,6 +51,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Config
+@Disabled
 public final class MecanumDrive {
     public static class Params {
         // drive model parameters
@@ -316,31 +318,31 @@ public final class MecanumDrive {
         ext2.setPosition(ServoPos);
     }
     public void bucketGetPixel(){
-        flip1.setPosition(ARCHIVEDTeleOPMeet0.flip_intake);
-        flip2.setPosition(ARCHIVEDTeleOPMeet0.flip_intake);
+        flip1.setPosition(RoboConstants.flip_intake);
+        flip2.setPosition(RoboConstants.flip_intake);
     }
     public void bucketVertical(){
-        flip1.setPosition(ARCHIVEDTeleOPMeet0.flip_vert);
-        flip2.setPosition(ARCHIVEDTeleOPMeet0.flip_vert);
-        placerPivot1.setPosition(ARCHIVEDTeleOPMeet0.ppGet);
-        placerPivot2.setPosition(ARCHIVEDTeleOPMeet0.ppGet);
+        flip1.setPosition(RoboConstants.flip_vert);
+        flip2.setPosition(RoboConstants.flip_vert);
+        placerPivot1.setPosition(RoboConstants.ppGet);
+        placerPivot2.setPosition(RoboConstants.ppGet);
     }
     public void bucketTransfer(){
-        flip1.setPosition(ARCHIVEDTeleOPMeet0.flip_lift);
-        flip2.setPosition(ARCHIVEDTeleOPMeet0.flip_lift);
+        flip1.setPosition(RoboConstants.flip_lift);
+        flip2.setPosition(RoboConstants.flip_lift);
     }
 
     public void clawGrab(){
-        claw1.setPosition(ARCHIVEDTeleOPMeet0.claw1Grab);
-        claw2.setPosition(ARCHIVEDTeleOPMeet0.claw2Grab);
+        claw1.setPosition(RoboConstants.claw1Grab);
+        claw2.setPosition(RoboConstants.claw2Grab);
     }
     public void ppBoard(){
-        placerPivot1.setPosition(ARCHIVEDTeleOPMeet0.ppBoardDrop);
-        placerPivot2.setPosition(ARCHIVEDTeleOPMeet0.ppBoardDrop);
+        placerPivot1.setPosition(RoboConstants.ppBoardDrop);
+        placerPivot2.setPosition(RoboConstants.ppBoardDrop);
     }
     public void ppHold(){
-        placerPivot1.setPosition(ARCHIVEDTeleOPMeet0.ppHold);
-        placerPivot2.setPosition(ARCHIVEDTeleOPMeet0.ppHold);
+        placerPivot1.setPosition(RoboConstants.ppHold);
+        placerPivot2.setPosition(RoboConstants.ppHold);
     }
     public void ppGround(){
         placerPivot1.setPosition(1);//as far as it can go

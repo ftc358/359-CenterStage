@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -17,7 +18,7 @@ import org.firstinspires.ftc.teamcode.vision.BlueDetectionLeft;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-
+@Disabled
 @Autonomous(name = "Meet 0 Autonomous Blue Far Left",group = "Autonomous")
 public class Meet0BlueFarLeftAuto extends LinearOpMode {
     private VisionPortal visionPortal;

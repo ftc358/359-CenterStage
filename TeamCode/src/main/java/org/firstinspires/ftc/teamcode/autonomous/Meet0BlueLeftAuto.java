@@ -29,16 +29,15 @@ public class Meet0BlueLeftAuto extends LinearOpMode {
     public int color = 0;
 
     public void runOpMode(){
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(12, 60, toRadians(270)));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(11.5, 60, toRadians(270)));
 
-        drive.extendZero();
         initVision();
 
-        drive.bucketTransfer();
+        drive.clawGrab();
         sleep(500);
         drive.ppHold();
-        sleep(500);
-        drive.clawGrab();
+       sleep(500);
+       drive.extendZero();
 
         while(opModeInInit() &&!isStarted()){
             color = BlueDetectionLeft.getReadout();
@@ -56,19 +55,19 @@ public class Meet0BlueLeftAuto extends LinearOpMode {
         if (color == 1) {
             runBlocking(new SequentialAction(
                     drive.actionBuilder(drive.pose)
-                            .splineToLinearHeading(new Pose2d(17, 44, toRadians(90)),0)
+                            .splineToLinearHeading(new Pose2d(18, 48, toRadians(90)),0)
                             .build()));
 
-        } else if (color ==2){
+        } else if (color ==2 || color == 0){
             runBlocking(new SequentialAction(
                     drive.actionBuilder(drive.pose)
-                            .splineToLinearHeading(new Pose2d(12,32, toRadians(90)),toRadians(300))
+                            .splineToLinearHeading(new Pose2d(11,37.5, toRadians(90)),toRadians(300))
                             .build()));
 
-        } else if (color == 3 || color == 0) {
+        } else if (color == 3) {
             runBlocking(new SequentialAction(
                     drive.actionBuilder(drive.pose)
-                            .splineToLinearHeading(new Pose2d(8, 33.5, toRadians(0)),toRadians(200))
+                            .splineToLinearHeading(new Pose2d(12, 33, toRadians(0)),toRadians(200))
                             .build()));
         }
         drive.ppGround();
@@ -80,19 +79,19 @@ public class Meet0BlueLeftAuto extends LinearOpMode {
         if (color == 1) {
             runBlocking(       new SequentialAction(
                     drive.actionBuilder(drive.pose)
-                            .splineToLinearHeading(new Pose2d(49, 38,Math.toRadians(180)), Math.toRadians(0))
+                            .splineToLinearHeading(new Pose2d(45, 40,Math.toRadians(180)), Math.toRadians(0))
                             .build()
             ));
-        } else if (color ==2){
+        } else if (color ==2|| color == 0){
             runBlocking(       new SequentialAction(
                     drive.actionBuilder(drive.pose)
-                            .splineToLinearHeading(new Pose2d(49, 34,Math.toRadians(180)), Math.toRadians(0))
+                            .splineToLinearHeading(new Pose2d(45, 33,Math.toRadians(180)), Math.toRadians(0))
                             .build()
             ));
-        } else if (color == 3 || color == 0) {
+        } else if (color == 3 ) {
             runBlocking(       new SequentialAction(
                     drive.actionBuilder(drive.pose)
-                            .splineToLinearHeading(new Pose2d(49, 27,Math.toRadians(180)), Math.toRadians(0))
+                            .splineToLinearHeading(new Pose2d(46.5, 27,Math.toRadians(180)), Math.toRadians(0))
                             .build()
             ));
         }

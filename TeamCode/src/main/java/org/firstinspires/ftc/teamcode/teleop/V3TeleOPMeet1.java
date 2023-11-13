@@ -1,48 +1,52 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import com.acmerobotics.dashboard.config.Config;
+import android.util.Size;
+
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
-import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.hardware.lynx.LynxModule.BulkData;
-import com.qualcomm.hardware.lynx.commands.core.LynxGetBulkInputDataCommand;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.sun.tools.javac.util.List;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.RoboConstants;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
-@Config
-@TeleOp (name = "V2 Meet 1 TeleOp",group = "TeleOP")
-public class HelpTeleOPMeet1 extends LinearOpMode {
+@TeleOp (name = "V3 Vision Infused Meet 1 TeleOp",group = "TeleOP")
+public class V3TeleOPMeet1 extends LinearOpMode{
     // saved on codeshare.io/lmaocopeharderpeopleofpaper727
 
-    // Dashboard Vars
-    public static double rapidTrigger_thr = 0.1;
-    public static double extension_sens = 0.727;
+    // Constants Import
+    public static double rapidTrigger_thr = RoboConstants.rapidTrigger_thr;
+    public static double extension_sens = RoboConstants.extension_sens;
 
-    public static double flip_lift = 0;
-    public static double flip_intake = 0.40;
-    public static double flip_half = 0.30;
-    public static double flip_dump = 0.6;
-    public static double flip_vert = 0.15;
+    public static double flip_lift = RoboConstants.flip_lift;
+    public static double flip_intake = RoboConstants.flip_intake;
+    public static double flip_half = RoboConstants.flip_half;
+    public static double flip_dump = RoboConstants.flip_dump;
+    public static double flip_vert = RoboConstants.flip_vert;
 
-    public static double ppGet = 0;
-    public static double ppHold = 0.21;
-    public static double ppBoardDrop = 0.77;
+    public static double ppGet = RoboConstants.ppGet;
+    public static double ppHold = RoboConstants.ppHold;
+    public static double ppBoardDrop = RoboConstants.ppBoardDrop;
 
-    public static double liftIdle = 0.001;
-    public static double liftDown = -1;
+    public static double liftIdle = RoboConstants.liftIdle;
+    public static double liftDown = RoboConstants.liftDown;
 
-    public static double intakeSpeed = 0.727;
+    public static double intakeSpeed = RoboConstants.intakeSpeed;
 
 
 
-    public static double claw1Grab = 0.38;
-    public static double claw2Grab = 0.47;
+    public static double claw1Grab = RoboConstants.claw1Grab;
+    public static double claw2Grab = RoboConstants.claw2Grab;
+
 
 
 
@@ -86,6 +90,13 @@ public class HelpTeleOPMeet1 extends LinearOpMode {
 
     boolean testingScheme;
 
+
+
+    private VisionPortal visionPortal;
+    private AprilTagProcessor aprilTagProcessor;
+    private TfodProcessor tfod;
+
+
     @Override
     public void runOpMode() throws InterruptedException {
         batteryCritical = new Gamepad.RumbleEffect.Builder()
@@ -128,6 +139,8 @@ public class HelpTeleOPMeet1 extends LinearOpMode {
                 testingScheme = true;
                 gamepad1.rumble(2000);
             }
+
+            initVision();
         }
         waitForStart();
         while (opModeIsActive()) {
@@ -233,8 +246,6 @@ public class HelpTeleOPMeet1 extends LinearOpMode {
                 case 2:
                     ppPos = 0.1;
                     flipPos = flip_lift;
-                    claw1Pos = claw1Grab;
-                    claw2Pos = claw2Grab;
                     break;
                 case 3: //Goes to Holding Position
                     ppPos = ppHold;
@@ -303,5 +314,20 @@ public class HelpTeleOPMeet1 extends LinearOpMode {
         }
 
         }
+
+    private void initVision() {
+        VisionPortal.makeMultiPortalView(2, VisionPortal.MultiPortalLayout.HORIZONTAL);
+
+
+        // Create the AprilTag processor by using a builder.
+//
+//        visionPortal = new VisionPortal.Builder()
+//                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"))
+//                .setCameraResolution(new Size(640,480))
+//                .addProcessor(aprilTagProcessor)
+//                .setStreamFormat(VisionPortal.StreamFormat.YUY2)
+//                .enableLiveView(true)
+//                .build();
+    }
     }
 

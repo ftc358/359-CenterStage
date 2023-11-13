@@ -10,6 +10,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 public class BlueDetectionLeft implements VisionProcessor {
@@ -36,14 +37,14 @@ public class BlueDetectionLeft implements VisionProcessor {
     public static double thresh = 0.12;
 
     static final Rect LEFT_ROI = new Rect(
-            new Point(140+50, 210),
-            new Point(140+130, 200+80));
+            new Point(240, 130),
+            new Point(240+80, 140+75));
     static final Rect CENTER_ROI = new Rect(
-            new Point(230+60,210),
-            new Point(230+160,200+50));
+            new Point(330,100),
+            new Point(330+90,100+75));
     static final Rect RIGHT_ROI = new Rect(
-            new Point(320+80, 200),
-            new Point(320+160, 200+85));
+            new Point(440, 110),
+            new Point(440+70, 130+75));
 
     Scalar No = new Scalar(255, 0, 0);
     Scalar Yes = new Scalar(0, 255, 0);
@@ -61,7 +62,7 @@ public class BlueDetectionLeft implements VisionProcessor {
 
     @Override
     public Object processFrame(Mat frame, long captureTimeNanos) {
-        Core.rotate(frame, frame, Core.ROTATE_180);
+        Imgproc.blur(frame,frame, new Size(4,4));
 
 
         Imgproc.cvtColor(frame, mat, Imgproc.COLOR_RGB2HSV);
