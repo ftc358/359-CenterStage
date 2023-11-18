@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -8,16 +9,47 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.RoboConstants;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-@TeleOp (name = "V2 Meet 1 TeleOp",group = "TeleOP")
-public class V2TeleOPMeet1 extends LinearOpMode{
-    // saved on codeshare.io/lmaocopeharderpeopleofpaper727
+import java.util.List;
+@Config
+@TeleOp (name = "V2 Meet 2 TeleOp",group = "TeleOP")
+public class V2TeleOPMeet2 extends LinearOpMode{
+
+    private VisionPortal visionPortal;
+    private AprilTagProcessor aprilTag;
+
+
+    private void initAprilTag() {
+        aprilTag = new AprilTagProcessor.Builder().build();
+
+        VisionPortal.Builder builder = new VisionPortal.Builder();
+        builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"));
+        builder.addProcessor(aprilTag);
+        visionPortal = builder.build();
+    }
+    private boolean AprilTagInRange(){
+        boolean state = false;
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        for (AprilTagDetection detection : currentDetections){
+            if (detection.metadata != null || detection.id == 1 ||detection.id == 2 ||detection.id == 3 ||detection.id == 4 ||detection.id == 5 ||detection.id ==6){
+                if (detection.ftcPose.range<5) {return true;}
+            } else {
+                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
+            }
+        }
+        return state;
+    }
 
     // Dashboard Vars
+    public static double diffyDiff = RoboConstants.diffyDiff;
+
     public static double rapidTrigger_thr = RoboConstants.rapidTrigger_thr;
     public static double extension_sens = RoboConstants.extension_sens;
 
@@ -36,10 +68,8 @@ public class V2TeleOPMeet1 extends LinearOpMode{
 
     public static double intakeSpeed = RoboConstants.intakeSpeed;
 
-
-
-    public static double claw1Grab = 0.38;
-    public static double claw2Grab = 0.47;
+    public static double claw1Grab = RoboConstants.claw1Grab;
+    public static double claw2Grab = RoboConstants.claw2Grab;
 
 
 
@@ -47,15 +77,14 @@ public class V2TeleOPMeet1 extends LinearOpMode{
     // Servo Pos
     double flipPos;
     double claw1Pos = 0;
-    public double claw2Pos = 0;
-    public double ppPos = 0;
-
+    double claw2Pos = 0;
+    double pp1Pos = 0;
+    double pp2Pos = 0;
+    double ppAngle = 0.5;
     double planeReleasePos = 0;
 
     // States
     float ext_past;
-
-    // PS5 Rumble
 
     double straight = 0;
     double turn = 0;
@@ -83,22 +112,13 @@ public class V2TeleOPMeet1 extends LinearOpMode{
     Gamepad previousGamepad2 = new Gamepad();
 
     boolean testingScheme;
+    int previousState = 0;
+
+
 
     @Override
+
     public void runOpMode() throws InterruptedException {
-        batteryCritical = new Gamepad.RumbleEffect.Builder()
-                .addStep(1.0, 1.0, 1000)
-                .build();
-
-        drop1Ready = new Gamepad.RumbleEffect.Builder()
-                .addStep(0.7, 0.7, 200)
-                .addStep(0, 0, 20)
-                .build();
-        drop2Ready = new Gamepad.RumbleEffect.Builder()
-                .addStep(0.7, 0.7, 100)
-                .addStep(0, 0, 100)
-                .build();
-
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
 
@@ -117,9 +137,8 @@ public class V2TeleOPMeet1 extends LinearOpMode{
         }
 
 
-
         int transferState = 0;
-
+        initAprilTag();
         while (opModeInInit() && !opModeIsActive()){
             if (gamepad1.ps){
                 telemetry.addLine("Control Scheme: Testing");
@@ -157,10 +176,6 @@ public class V2TeleOPMeet1 extends LinearOpMode{
             maxPower = (driveTrainPower > maxPower) ? driveTrainPower : maxPower;
 
             telemetry.addLine("Powertrain Statistics");
-            telemetry.addData("Left Front Current (A)", leftFrontC);
-            telemetry.addData("Left Back Current (A)", leftBackC);
-            telemetry.addData("Right Front Current (A)", rightFrontC);
-            telemetry.addData("Right Back Current (A)", rightBackC);
             telemetry.addLine();
             telemetry.addData("Drive Current (A)", drivetrainC);
             telemetry.addData("Total Current (A)", fiveC);
@@ -173,22 +188,17 @@ public class V2TeleOPMeet1 extends LinearOpMode{
             strafe = (gamepad1.left_stick_x > 0.1) ? (Math.pow(gamepad1.left_stick_x, 3) + 0.26) : (gamepad1.left_stick_x < -0.1) ? (Math.pow(gamepad1.left_stick_x, 3) - 0.26) : 0;
             turn = (gamepad1.right_stick_x > 0.1) ? (Math.pow(gamepad1.right_stick_x, 5) + 0.26) : (gamepad1.right_stick_x < -0.1) ? (Math.pow(gamepad1.right_stick_x, 5) - 0.26) : 0;
 
+            if(AprilTagInRange()){
+                straight /= 2;
+                strafe /= 2;
+                turn /= 2;
+            }
 
             drive.setDrivePowers(new PoseVelocity2d(new Vector2d(straight, -strafe), -turn));
             drive.updatePoseEstimate();
 
             //Bucket Flip
-            if (currentGamepad2.dpad_left) {
-                flipPos = flip_dump;
-            } else if (currentGamepad2.left_trigger == 0 && !currentGamepad2.dpad_left) {
-                flipPos = flip_vert;
-            } else if (((currentGamepad2.left_trigger - ext_past) > 0) && !currentGamepad2.dpad_left) {
-                //extension trigger
-                flipPos = flip_intake;
-            } else if (((ext_past - currentGamepad2.left_trigger) > rapidTrigger_thr) && !currentGamepad2.dpad_left) {
-                //extension retract
-                flipPos = flip_half;
-            }
+            flipPos = (currentGamepad2.dpad_left)?flip_dump:((currentGamepad2.left_trigger - ext_past) > 0)?flip_intake:flip_vert;
 
             //Intake Trigger
             intakePower = (currentGamepad2.left_trigger > 0 && !currentGamepad2.dpad_left) ? intakeSpeed : (currentGamepad2.left_bumper || currentGamepad2.dpad_left) ? -1 : 0;
@@ -200,59 +210,97 @@ public class V2TeleOPMeet1 extends LinearOpMode{
             liftPower = (currentGamepad2.right_trigger > 0) ? currentGamepad2.right_trigger : (currentGamepad2.right_bumper) ? liftDown : liftIdle;
 
             //Attack Plan R
-            planeReleasePos = currentGamepad1.options ? 0 : 1;
+            planeReleasePos = (currentGamepad1.options || currentGamepad2.options) ? 0 : 1;
 
 
             //Transfer States
-            if (currentGamepad2.x && !previousGamepad2.x && (transferState<=4 ||transferState==6)) {
-                transferState = (transferState + 1) % 7 ;
-            } else if (currentGamepad1.a && !previousGamepad1.a && (transferState == 4 || transferState == 5 || transferState == 6)){
-                transferState = (transferState + 1) % 7;
+            if (currentGamepad2.x && !previousGamepad2.x && (transferState<=4 ||transferState==7 ||transferState ==8)) {
+                transferState = (transferState + 1) % 10 ;
+            } else if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper && (transferState == 4 || transferState == 5 || transferState == 6)){
+                transferState = 7;
+            } else if (currentGamepad2.square && !previousGamepad2.square && (transferState == 4)){ //turns the diffy left
+                transferState = 5;
+                previousState = 5;
+            } else if (currentGamepad2.circle && !previousGamepad2.circle && (transferState == 4)){ //turns the diffy right
+                transferState = 6;
+                previousState = 6;
+
+            } else if ((currentGamepad1.square && !previousGamepad1.square || currentGamepad1.circle && !previousGamepad1.circle)&&  (previousState == 5 || previousState ==6) ){
+                transferState = 4;
+                previousState = 0;
             }
-            else if (currentGamepad1.b && !previousGamepad1.b && transferState == 5) {
-                transferState = 0;
-            } else if (currentGamepad2.a) {
-                transferState = 0;
+
+
+            else if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper && transferState == 8) { //Resets down.
+                transferState = 9;
+            } else if (currentGamepad2.a) {//Reset Anytime
+                transferState = 9;
             }
 
                             //Transfer Switch-Case
             switch (transferState) {
-                case 0:
-                    ppPos = ppGet;
+                case 0: //home
+                    pp1Pos = ppGet;
+                    pp2Pos = ppGet;
                     claw1Pos = 0;
                     claw2Pos = 0;
                     break;
-                case 1:
-                    ppPos = 0;
-                    flipPos = flip_lift;
-                    claw1Pos = 0;
-                    claw2Pos = 0;
-                    break;
-                case 2:
-                    ppPos = 0.1;
+                case 1: //bucket in
                     flipPos = flip_lift;
                     break;
-                case 3: //Goes to Holding Position
-                    ppPos = ppHold;
+                case 2: //pp up a bit
+                    pp1Pos = 0.1;
+                    pp2Pos = 0.1;
+                    if (drive.diffyRightPos()==0.1){//Tune this pos.
+                        transferState = 3;
+                    }
+                    break;
+                case 3: //hold and goes to Holding Position
+                    pp1Pos = ppHold;
+                    pp2Pos = ppHold;
                     claw1Pos = claw1Grab;
                     claw2Pos = claw2Grab;
                     break;
-                case 4: //Goes to Board Dropping Position
-                    claw1Pos = claw1Grab;
-                    claw2Pos = claw2Grab;
-                    flipPos = flip_lift;
-                    ppPos = ppBoardDrop;
+
+
+
+
+                case 4: //Goes to Board Dropping Position // Ready to Drop Right Away
+                    pp1Pos = ppBoardDrop;
+                    pp2Pos = ppBoardDrop;
                     break;
-                case 5: //Drops the Outermost
+                case 5: //Diffy Left
+                    pp1Pos = ppBoardDrop +diffyDiff;
+                    pp2Pos = ppBoardDrop -diffyDiff;
+                    ppAngle = 0.4; //Limit 0.18
+                    break;
+                case 6: //Diffy Right
+                    pp1Pos = ppBoardDrop -diffyDiff;
+                    pp2Pos = ppBoardDrop +diffyDiff;
+                    ppAngle = 0.6; //Limit 0.82
+                    break;
+
+
+
+                case 7: //Drops the Outermost
                     claw2Pos = 0;
                     break;
-                case 6: //Drops the Innermost
+                case 8: //Drops the Innermost
                     claw1Pos = 0;
                     claw2Pos = 0;
+                    break;
+                case 9:
+                    pp1Pos = ppBoardDrop;
+                    pp2Pos = ppBoardDrop;
+                    if (drive.diffyLeftPos()==drive.diffyRightPos()){transferState = 0;}
                     break;
             }
 
 
+            telemetry.addData("pp1Pos",pp1Pos);
+            telemetry.addData("pp2Pos",pp2Pos);
+            telemetry.addData("encoderpp1",drive.diffyLeftPos());
+            telemetry.addData("encoderpp2",drive.diffyRightPos());
 
 
 
@@ -264,8 +312,8 @@ public class V2TeleOPMeet1 extends LinearOpMode{
             drive.flip2.setPosition(flipPos);
             drive.claw1.setPosition(claw1Pos);
             drive.claw2.setPosition(claw2Pos);
-            drive.placerPivot1.setPosition(ppPos);
-            drive.placerPivot2.setPosition(ppPos);
+            drive.placerPivot1.setPosition(pp1Pos);
+            drive.placerPivot2.setPosition(pp2Pos);
             drive.planeRelease.setPosition(planeReleasePos);
 
             //Unified External Motor Action
@@ -282,20 +330,16 @@ public class V2TeleOPMeet1 extends LinearOpMode{
 
 
             telemetry.addData("Current Transfer State ", transferState);
-            if (currentVoltage < 7) {
-                for (int i = 0; i <= 10; i++) {
-                    telemetry.addLine("STOP BATTERY ABUSE >:-(");
-                }
-                gamepad1.runRumbleEffect(batteryCritical);
-                gamepad2.runRumbleEffect(batteryCritical);
-            }
             ext_past = currentGamepad2.right_trigger;
-
-
             telemetry.update();
 
+
+            sleep(10);
         }
 
-        }
+
+        visionPortal.close();
+
+    }   // end method doCameraSwitching()
     }
 

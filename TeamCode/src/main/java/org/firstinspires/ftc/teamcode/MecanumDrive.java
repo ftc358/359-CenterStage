@@ -32,9 +32,11 @@ import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -101,7 +103,9 @@ public final class MecanumDrive {
     public final DcMotorEx leftFront, leftBack, rightBack, rightFront;
     public DcMotorEx lift1, lift2;
     public DcMotor intake;
-    public Servo claw1, claw2, flip1, flip2, ext1, ext2, placerPivot1, placerPivot2, planeRelease;
+    public Servo claw1, claw2, flip1, flip2, ext1, ext2, placerPivot1, placerPivot2, planeRelease, ppAngle;
+    public AnalogInput diffyLeftEnc, diffyRightEnc;
+    public DistanceSensor boardDist;
     public TouchSensor liftHome;
 
     public final VoltageSensor voltageSensor;
@@ -229,6 +233,9 @@ public final class MecanumDrive {
          *  Sensors:
          *      Digital:
          *      Analog:
+         *      Put The Axon thingies here or on the other one?
+         *      Add the Distance Sensor onto Something
+         *      x2
          *
          *
          *
@@ -273,9 +280,16 @@ public final class MecanumDrive {
         claw2 = hardwareMap.get(Servo.class,"claw2");
         claw1.setDirection(Servo.Direction.REVERSE);
 
+        ppAngle = hardwareMap.get(Servo.class, "ppAngle");
+
         planeRelease = hardwareMap.get(Servo.class, "planeRelease");
 
         liftHome = hardwareMap.get(TouchSensor.class,"liftHome");
+
+        diffyLeftEnc = hardwareMap.get(AnalogInput.class, "diffyLeftEnc");
+        diffyRightEnc = hardwareMap.get(AnalogInput.class,"diffyRightEnc");
+
+        boardDist = hardwareMap.get(DistanceSensor.class, "boardDist");
 
         imu = hardwareMap.get(IMU.class, "imu");
 
@@ -289,10 +303,13 @@ public final class MecanumDrive {
         localizer = new ThreeDeadWheelLocalizer(hardwareMap, PARAMS.inPerTick);
     }
 
-    public double getTotalCurrent(){
-        return (ch.getCurrent(CurrentUnit.AMPS) + exh.getCurrent(CurrentUnit.AMPS));
-    }
 
+    public double diffyLeftPos(){
+        return diffyLeftEnc.getVoltage()/3.3*(360/355);
+    }
+    public double diffyRightPos(){
+        return diffyRightEnc.getVoltage()/3.3*(360/355);
+    }
 
 
 

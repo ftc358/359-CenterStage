@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import android.util.Size;
+import android.graphics.Canvas;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
@@ -9,21 +9,54 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.sun.tools.javac.util.List;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.RoboConstants;
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
+import org.opencv.core.Mat;
 
-@TeleOp (name = "V3 Vision Infused Meet 1 TeleOp",group = "TeleOP")
-public class V3TeleOPMeet1 extends LinearOpMode{
-    // saved on codeshare.io/lmaocopeharderpeopleofpaper727
+import java.util.ArrayList;
+import java.util.List;
 
-    // Constants Import
+@TeleOp (name = "V1 Meet 2 TeleOp",group = "TeleOP")
+public class V1TeleOPMeet2 extends LinearOpMode{
+
+    private VisionPortal visionPortal;
+    private AprilTagProcessor aprilTag;
+
+
+    private void initAprilTag() {
+        aprilTag = new AprilTagProcessor.Builder().build();
+
+        VisionPortal.Builder builder = new VisionPortal.Builder();
+        builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"));
+        builder.addProcessor(aprilTag);
+        visionPortal = builder.build();
+    }
+    private boolean AprilTagInRange(){
+        boolean state = false;
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        for (AprilTagDetection detection : currentDetections){
+            if (detection.metadata != null || detection.id == 1 ||detection.id == 2 ||detection.id == 3 ||detection.id == 4 ||detection.id == 5 ||detection.id ==6){
+                if (detection.ftcPose.range<5) {return true;}
+            } else {
+                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
+            }
+        }
+        return state;
+    }
+
+    // Dashboard Vars
     public static double rapidTrigger_thr = RoboConstants.rapidTrigger_thr;
     public static double extension_sens = RoboConstants.extension_sens;
 
@@ -44,8 +77,8 @@ public class V3TeleOPMeet1 extends LinearOpMode{
 
 
 
-    public static double claw1Grab = RoboConstants.claw1Grab;
-    public static double claw2Grab = RoboConstants.claw2Grab;
+    public static double claw1Grab = 0.38;
+    public static double claw2Grab = 0.47;
 
 
 
@@ -55,6 +88,7 @@ public class V3TeleOPMeet1 extends LinearOpMode{
     double claw1Pos = 0;
     public double claw2Pos = 0;
     public double ppPos = 0;
+    double ppAngle = 0.5;
 
     double planeReleasePos = 0;
 
@@ -92,25 +126,11 @@ public class V3TeleOPMeet1 extends LinearOpMode{
 
 
 
-    private VisionPortal visionPortal;
-    private AprilTagProcessor aprilTagProcessor;
-    private TfodProcessor tfod;
-
-
     @Override
     public void runOpMode() throws InterruptedException {
-        batteryCritical = new Gamepad.RumbleEffect.Builder()
-                .addStep(1.0, 1.0, 1000)
-                .build();
 
-        drop1Ready = new Gamepad.RumbleEffect.Builder()
-                .addStep(0.7, 0.7, 200)
-                .addStep(0, 0, 20)
-                .build();
-        drop2Ready = new Gamepad.RumbleEffect.Builder()
-                .addStep(0.7, 0.7, 100)
-                .addStep(0, 0, 100)
-                .build();
+
+
 
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
@@ -130,17 +150,14 @@ public class V3TeleOPMeet1 extends LinearOpMode{
         }
 
 
-
         int transferState = 0;
-
+        initAprilTag();
         while (opModeInInit() && !opModeIsActive()){
             if (gamepad1.ps){
                 telemetry.addLine("Control Scheme: Testing");
                 testingScheme = true;
                 gamepad1.rumble(2000);
             }
-
-            initVision();
         }
         waitForStart();
         while (opModeIsActive()) {
@@ -172,10 +189,6 @@ public class V3TeleOPMeet1 extends LinearOpMode{
             maxPower = (driveTrainPower > maxPower) ? driveTrainPower : maxPower;
 
             telemetry.addLine("Powertrain Statistics");
-            telemetry.addData("Left Front Current (A)", leftFrontC);
-            telemetry.addData("Left Back Current (A)", leftBackC);
-            telemetry.addData("Right Front Current (A)", rightFrontC);
-            telemetry.addData("Right Back Current (A)", rightBackC);
             telemetry.addLine();
             telemetry.addData("Drive Current (A)", drivetrainC);
             telemetry.addData("Total Current (A)", fiveC);
@@ -188,22 +201,17 @@ public class V3TeleOPMeet1 extends LinearOpMode{
             strafe = (gamepad1.left_stick_x > 0.1) ? (Math.pow(gamepad1.left_stick_x, 3) + 0.26) : (gamepad1.left_stick_x < -0.1) ? (Math.pow(gamepad1.left_stick_x, 3) - 0.26) : 0;
             turn = (gamepad1.right_stick_x > 0.1) ? (Math.pow(gamepad1.right_stick_x, 5) + 0.26) : (gamepad1.right_stick_x < -0.1) ? (Math.pow(gamepad1.right_stick_x, 5) - 0.26) : 0;
 
+            if(AprilTagInRange()){
+                straight /= 2;
+                strafe /= 2;
+                turn /= 2;
+            }
 
             drive.setDrivePowers(new PoseVelocity2d(new Vector2d(straight, -strafe), -turn));
             drive.updatePoseEstimate();
 
             //Bucket Flip
-            if (currentGamepad2.dpad_left) {
-                flipPos = flip_dump;
-            } else if (currentGamepad2.left_trigger == 0 && !currentGamepad2.dpad_left) {
-                flipPos = flip_vert;
-            } else if (((currentGamepad2.left_trigger - ext_past) > 0) && !currentGamepad2.dpad_left) {
-                //extension trigger
-                flipPos = flip_intake;
-            } else if (((ext_past - currentGamepad2.left_trigger) > rapidTrigger_thr) && !currentGamepad2.dpad_left) {
-                //extension retract
-                flipPos = flip_half;
-            }
+            flipPos = (currentGamepad2.dpad_left)?flip_dump:((currentGamepad2.left_trigger - ext_past) > 0)?flip_intake:flip_vert;
 
             //Intake Trigger
             intakePower = (currentGamepad2.left_trigger > 0 && !currentGamepad2.dpad_left) ? intakeSpeed : (currentGamepad2.left_bumper || currentGamepad2.dpad_left) ? -1 : 0;
@@ -215,13 +223,13 @@ public class V3TeleOPMeet1 extends LinearOpMode{
             liftPower = (currentGamepad2.right_trigger > 0) ? currentGamepad2.right_trigger : (currentGamepad2.right_bumper) ? liftDown : liftIdle;
 
             //Attack Plan R
-            planeReleasePos = currentGamepad1.options ? 1.0 : 0;
+            planeReleasePos = (currentGamepad1.options || currentGamepad2.options) ? 0 : 1;
 
 
             //Transfer States
             if (currentGamepad2.x && !previousGamepad2.x && (transferState<=4 ||transferState==6)) {
                 transferState = (transferState + 1) % 7 ;
-            } else if (currentGamepad1.a && !previousGamepad1.a && (transferState == 4 || transferState == 5 || transferState == 6)){
+            } else if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper && (transferState == 4 || transferState == 5 || transferState == 6)){
                 transferState = (transferState + 1) % 7;
             }
             else if (currentGamepad1.b && !previousGamepad1.b && transferState == 5) {
@@ -240,12 +248,9 @@ public class V3TeleOPMeet1 extends LinearOpMode{
                 case 1:
                     ppPos = 0;
                     flipPos = flip_lift;
-                    claw1Pos = 0;
-                    claw2Pos = 0;
                     break;
                 case 2:
                     ppPos = 0.1;
-                    flipPos = flip_lift;
                     break;
                 case 3: //Goes to Holding Position
                     ppPos = ppHold;
@@ -253,26 +258,17 @@ public class V3TeleOPMeet1 extends LinearOpMode{
                     claw2Pos = claw2Grab;
                     break;
                 case 4: //Goes to Board Dropping Position
-                    claw1Pos = claw1Grab;
-                    claw2Pos = claw2Grab;
-                    flipPos = flip_lift;
                     ppPos = ppBoardDrop;
-                    gamepad1.runRumbleEffect(drop1Ready);
                     break;
+
                 case 5: //Drops the Outermost
                     claw2Pos = 0;
-                    gamepad1.runRumbleEffect(drop2Ready);
                     break;
                 case 6: //Drops the Innermost
                     claw1Pos = 0;
                     claw2Pos = 0;
                     break;
             }
-
-
-
-
-
 
             //Unified Servo Actuation
             drive.ext1.setPosition(extPos);
@@ -299,35 +295,16 @@ public class V3TeleOPMeet1 extends LinearOpMode{
 
 
             telemetry.addData("Current Transfer State ", transferState);
-            if (currentVoltage < 7) {
-                for (int i = 0; i <= 10; i++) {
-                    telemetry.addLine("STOP BATTERY ABUSE >:-(");
-                }
-                gamepad1.runRumbleEffect(batteryCritical);
-                gamepad2.runRumbleEffect(batteryCritical);
-            }
             ext_past = currentGamepad2.right_trigger;
-
-
             telemetry.update();
 
+
+            sleep(10);
         }
 
-        }
 
-    private void initVision() {
-        VisionPortal.makeMultiPortalView(2, VisionPortal.MultiPortalLayout.HORIZONTAL);
+        visionPortal.close();
 
-
-        // Create the AprilTag processor by using a builder.
-//
-//        visionPortal = new VisionPortal.Builder()
-//                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"))
-//                .setCameraResolution(new Size(640,480))
-//                .addProcessor(aprilTagProcessor)
-//                .setStreamFormat(VisionPortal.StreamFormat.YUY2)
-//                .enableLiveView(true)
-//                .build();
-    }
+    }   // end method doCameraSwitching()
     }
 

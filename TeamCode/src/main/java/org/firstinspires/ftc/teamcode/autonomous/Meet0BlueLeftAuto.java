@@ -52,6 +52,7 @@ public class Meet0BlueLeftAuto extends LinearOpMode {
 
         waitForStart();
 
+
         if (color == 1) {
             runBlocking(new SequentialAction(
                     drive.actionBuilder(drive.pose)

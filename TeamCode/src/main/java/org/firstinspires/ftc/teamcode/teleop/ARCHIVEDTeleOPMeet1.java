@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 @Config
 @Disabled
 @TeleOp (name = "Meet 1 TeleOp",group = "TeleOP")
-public class TeleOPMeet1 extends LinearOpMode {
+public class ARCHIVEDTeleOPMeet1 extends LinearOpMode {
  // saved on codeshare.io/lmaocopeharderpeopleofpaper727
 
 
@@ -177,6 +177,7 @@ public class TeleOPMeet1 extends LinearOpMode {
 
 
             //Intake Trigger
+
             if (currentGamepad2.left_trigger>0 && !currentGamepad2.dpad_left){
                 drive.intake.setPower(intakeSpeed);
             } else if (currentGamepad2.left_bumper || currentGamepad2.dpad_left) {

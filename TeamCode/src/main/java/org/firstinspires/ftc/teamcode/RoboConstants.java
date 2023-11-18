@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
+
 import com.acmerobotics.dashboard.config.Config;
 
 @Config
 public class RoboConstants {
+    public static double diffyDiff = 0.2;
+
     public static double rapidTrigger_thr = 0.1;
     public static double extension_sens = 0.727;
 
