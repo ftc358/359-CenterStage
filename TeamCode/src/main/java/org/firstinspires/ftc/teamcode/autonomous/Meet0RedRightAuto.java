@@ -24,7 +24,7 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 
-@Autonomous(name = "Meet 0 Autonomous Red Right",group = "Autonomous")
+@Autonomous
 public class Meet0RedRightAuto extends LinearOpMode {
     VisionPortal.Builder VPBuilder;
     private VisionPortal visionPortal1;
