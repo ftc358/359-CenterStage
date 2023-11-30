@@ -65,6 +65,7 @@ public class RedDetectionRight implements VisionProcessor {
 
     @Override
     public Object processFrame(Mat frame, long captureTimeNanos) {
+        Core.rotate(frame,frame,Core.ROTATE_180);
         Imgproc.blur(frame,frame, new Size(4,4));
         Imgproc.cvtColor(frame, mat, Imgproc.COLOR_RGB2HSV);
 

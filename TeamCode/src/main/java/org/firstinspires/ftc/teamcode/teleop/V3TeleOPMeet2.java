@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.RoboConstants;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -19,9 +18,35 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
+
 @Config
 @TeleOp (name = "V2 Meet 2 TeleOp",group = "TeleOP")
-public class V2TeleOPMeet2 extends LinearOpMode{
+public class V3TeleOPMeet2 extends LinearOpMode{
+
+    private VisionPortal visionPortal;
+    private AprilTagProcessor aprilTag;
+
+
+    private void initAprilTag() {
+        aprilTag = new AprilTagProcessor.Builder().build();
+        VisionPortal.Builder builder = new VisionPortal.Builder();
+        builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"));
+        builder.addProcessor(aprilTag);
+        visionPortal = builder.build();
+    }
+
+    private boolean AprilTagInRange(){
+        boolean state = false;
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        for (AprilTagDetection detection : currentDetections){
+            if (detection.metadata != null || detection.id == 1 ||detection.id == 2 ||detection.id == 3 ||detection.id == 4 ||detection.id == 5 ||detection.id ==6){
+                if (detection.ftcPose.range<5) {return true;}
+            } else {
+                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
+            }
+        }
+        return state;
+    }
 
     // Dashboard Vars
     public static double diffyDiff = RoboConstants.diffyDiff;
@@ -47,6 +72,9 @@ public class V2TeleOPMeet2 extends LinearOpMode{
     public static double claw1Grab = RoboConstants.claw1Grab;
     public static double claw2Grab = RoboConstants.claw2Grab;
 
+
+
+
     // Servo Pos
     double flipPos;
     double claw1Pos = 0;
@@ -58,6 +86,7 @@ public class V2TeleOPMeet2 extends LinearOpMode{
 
     // States
     float ext_past;
+
     double straight = 0;
     double turn = 0;
     double strafe = 0;
@@ -84,7 +113,6 @@ public class V2TeleOPMeet2 extends LinearOpMode{
     Gamepad previousGamepad2 = new Gamepad();
 
     boolean testingScheme;
-    boolean slowflag = false;
     int previousState = 0;
 
 
@@ -111,6 +139,7 @@ public class V2TeleOPMeet2 extends LinearOpMode{
 
 
         int transferState = 0;
+        initAprilTag();
         while (opModeInInit() && !opModeIsActive()){
             if (gamepad1.ps){
                 telemetry.addLine("Control Scheme: Testing");
@@ -160,12 +189,11 @@ public class V2TeleOPMeet2 extends LinearOpMode{
             strafe = (gamepad1.left_stick_x > 0.1) ? (Math.pow(gamepad1.left_stick_x, 3) + 0.26) : (gamepad1.left_stick_x < -0.1) ? (Math.pow(gamepad1.left_stick_x, 3) - 0.26) : 0;
             turn = (gamepad1.right_stick_x > 0.1) ? (Math.pow(gamepad1.right_stick_x, 5) + 0.26) : (gamepad1.right_stick_x < -0.1) ? (Math.pow(gamepad1.right_stick_x, 5) - 0.26) : 0;
 
-            if (slowflag){
-                straight/=2;
-                strafe/=2;
-                turn/=2;
+            if(AprilTagInRange()){
+                straight /= 2;
+                strafe /= 2;
+                turn /= 2;
             }
-            telemetry.addData("the distance sensor magically reads",drive.boardDist.getDistance(DistanceUnit.INCH));
 
             drive.setDrivePowers(new PoseVelocity2d(new Vector2d(straight, -strafe), -turn));
             drive.updatePoseEstimate();
@@ -191,7 +219,6 @@ public class V2TeleOPMeet2 extends LinearOpMode{
                 transferState = (transferState + 1) % 10 ;
             } else if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper && (transferState == 4 || transferState == 5 || transferState == 6)){
                 transferState = 7;
-                if (drive.boardDist.getDistance(DistanceUnit.INCH)<9){slowflag = true;}else{slowflag=false;}
             } else if (currentGamepad2.square && !previousGamepad2.square && (transferState == 4)){ //turns the diffy left
                 transferState = 5;
                 previousState = 5;
@@ -310,6 +337,10 @@ public class V2TeleOPMeet2 extends LinearOpMode{
 
             sleep(10);
         }
+
+
+        visionPortal.close();
+
     }   // end method doCameraSwitching()
     }
 

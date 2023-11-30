@@ -274,7 +274,7 @@ public final class MecanumDrive {
 
         placerPivot1 = hardwareMap.get(Servo.class,"placerPivot1");
         placerPivot2 = hardwareMap.get(Servo.class,"placerPivot2");
-        placerPivot1.setDirection(Servo.Direction.REVERSE);
+        placerPivot2.setDirection(Servo.Direction.REVERSE);
 
         claw1 = hardwareMap.get(Servo.class,"claw1");
         claw2 = hardwareMap.get(Servo.class,"claw2");

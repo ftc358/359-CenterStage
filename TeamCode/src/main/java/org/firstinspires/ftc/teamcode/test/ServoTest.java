@@ -29,7 +29,6 @@
 
 package org.firstinspires.ftc.teamcode.test;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -37,32 +36,44 @@ import com.qualcomm.robotcore.hardware.Servo;
 @TeleOp(name = "Servo Test", group = "Testing")
 public class ServoTest extends LinearOpMode {
 
-    Servo   servo;
-    double servoPos = 0.5;
+    Servo   servo1, servo2;
+    double servo1Pos = 0;
+    double servo2Pos = 0;
 
 
     @Override
     public void runOpMode() {
 
-        servo = hardwareMap.get(Servo.class, "ppAngle");
+        servo1 = hardwareMap.get(Servo.class,"placerPivot1");
+        servo2 = hardwareMap.get(Servo.class, "placerPivot2");
+        servo2.setDirection(Servo.Direction.REVERSE);
 
-        telemetry.addData("Servo Pos", servoPos );
+        telemetry.addData("Servo1 Pos", servo1Pos);
+        telemetry.addData("Servo2 Pos", servo2Pos);
+
         telemetry.update();
         waitForStart();
 
         while(opModeIsActive()){
             if (gamepad1.square){
-                servoPos = 0.1;
+                servo1Pos = 0;
+                servo2Pos = 0;
             }
             else if (gamepad1.circle){
-                servoPos = 0.9;
+                servo1Pos = 1.0;
+                servo2Pos = 1.0;
             }
             else {
-                servoPos = 0.5;
+                servo1Pos = 0.5;
+                servo2Pos = 0.5;
+                servo1Pos +=gamepad1.left_stick_x;
+                servo2Pos -=gamepad1.left_stick_x;
             }
-            telemetry.addData("Servo Pos", servoPos );
+            telemetry.addData("Servo Pos", servo1Pos);
+            telemetry.addData("2", servo2Pos);
             telemetry.update();
-            servo.setPosition(servoPos);
+            servo1.setPosition(servo1Pos);
+            servo2.setPosition(servo2Pos);
         }
 
         // Signal done;
