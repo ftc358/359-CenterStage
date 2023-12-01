@@ -24,7 +24,6 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 public class Meet0BlueLeftAuto extends LinearOpMode {
     private VisionPortal visionPortal;
     private AprilTagProcessor aprilTagProcessor;
-//    public RedDetectionRight detector = new RedDetectionRight(telemetry);
     public BlueDetectionLeft detector = new BlueDetectionLeft(telemetry);
     public int color = 0;
 

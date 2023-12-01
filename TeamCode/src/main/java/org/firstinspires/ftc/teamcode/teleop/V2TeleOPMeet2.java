@@ -65,6 +65,7 @@ public class V2TeleOPMeet2 extends LinearOpMode{
 
     double intakePower = 0;
     double liftPower = 0;
+    double ratchet = 0;
 
     double currentVoltage = 12;
     double drivetrainC = 0;
@@ -77,6 +78,7 @@ public class V2TeleOPMeet2 extends LinearOpMode{
     double fiveC = 0;
 
 
+
     Gamepad.RumbleEffect batteryCritical, drop1Ready, drop2Ready;
     Gamepad currentGamepad1 = new Gamepad();
     Gamepad currentGamepad2 = new Gamepad();
@@ -86,6 +88,9 @@ public class V2TeleOPMeet2 extends LinearOpMode{
     boolean testingScheme;
     boolean slowflag = false;
     int previousState = 0;
+    int flipped = 1;
+    int diffyflip = 2;
+    double microAdjust = 0;
 
 
 
@@ -98,9 +103,7 @@ public class V2TeleOPMeet2 extends LinearOpMode{
 
         ext_past = 0;
 
-        drive.lift1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         drive.lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        drive.lift1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         drive.lift2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         currentVoltage = drive.voltageSensor.getVoltage();//Could Use for Something
 
@@ -155,17 +158,16 @@ public class V2TeleOPMeet2 extends LinearOpMode{
             telemetry.addData("Max Drive Power (W)", maxPower);
 
 
-            //Curving Controls. This is extremely unecessary but it saves space
-            straight = (-gamepad1.left_stick_y > 0.1) ? (Math.pow(-gamepad1.left_stick_y, 3) + 0.26) : (-gamepad1.left_stick_y < -0.1) ? (Math.pow(-gamepad1.left_stick_y, 3) - 0.26) : 0;
-            strafe = (gamepad1.left_stick_x > 0.1) ? (Math.pow(gamepad1.left_stick_x, 3) + 0.26) : (gamepad1.left_stick_x < -0.1) ? (Math.pow(gamepad1.left_stick_x, 3) - 0.26) : 0;
-            turn = (gamepad1.right_stick_x > 0.1) ? (Math.pow(gamepad1.right_stick_x, 5) + 0.26) : (gamepad1.right_stick_x < -0.1) ? (Math.pow(gamepad1.right_stick_x, 5) - 0.26) : 0;
 
             if (slowflag){
-                straight/=2;
-                strafe/=2;
-                turn/=2;
+                straight = (-gamepad1.left_stick_y/2 > 0.1) ? (-gamepad1.left_stick_y/2 + 0.26) : (-gamepad1.left_stick_y < -0.1) ? (-gamepad1.left_stick_y - 0.26) : 0;
+                strafe = (gamepad1.left_stick_x > 0.1) ? (gamepad1.left_stick_x/2 + 0.26) : (gamepad1.left_stick_x < -0.1) ? (gamepad1.left_stick_x/2 - 0.26) : 0;
+                turn = (gamepad1.right_stick_x > 0.1) ? (gamepad1.right_stick_x/2 + 0.26) : (gamepad1.right_stick_x < -0.1) ? (gamepad1.right_stick_x/2 - 0.26) : 0;
+            } else{
+                straight = (-gamepad1.left_stick_y > 0.1) ? (Math.pow(-gamepad1.left_stick_y, 3) + 0.26) : (-gamepad1.left_stick_y < -0.1) ? (Math.pow(-gamepad1.left_stick_y, 3) - 0.26) : 0;
+                strafe = (gamepad1.left_stick_x > 0.1) ? (Math.pow(gamepad1.left_stick_x, 3) + 0.26) : (gamepad1.left_stick_x < -0.1) ? (Math.pow(gamepad1.left_stick_x, 3) - 0.26) : 0;
+                turn = (gamepad1.right_stick_x > 0.1) ? (Math.pow(gamepad1.right_stick_x, 5) + 0.26) : (gamepad1.right_stick_x < -0.1) ? (Math.pow(gamepad1.right_stick_x, 5) - 0.26) : 0;
             }
-            telemetry.addData("the distance sensor magically reads",drive.boardDist.getDistance(DistanceUnit.INCH));
 
             drive.setDrivePowers(new PoseVelocity2d(new Vector2d(straight, -strafe), -turn));
             drive.updatePoseEstimate();
@@ -184,6 +186,8 @@ public class V2TeleOPMeet2 extends LinearOpMode{
 
             //Attack Plan R
             planeReleasePos = (currentGamepad1.options || currentGamepad2.options) ? 0 : 1;
+
+            ratchet = currentGamepad1.left_trigger;
 
 
             //Transfer States
@@ -236,13 +240,15 @@ public class V2TeleOPMeet2 extends LinearOpMode{
                     claw2Pos = claw2Grab;
                     break;
 
-
-
-
                 case 4: //Goes to Board Dropping Position // Ready to Drop Right Away
                     pp1Pos = ppBoardDrop;
                     pp2Pos = ppBoardDrop;
+
+                    microAdjust = gamepad2.left_stick_x;
+                    pp1Pos += microAdjust;
+                    pp2Pos -= microAdjust;
                     break;
+
                 case 5: //Diffy Left
                     pp1Pos = ppBoardDrop +diffyDiff;
                     pp2Pos = ppBoardDrop -diffyDiff;
@@ -253,9 +259,6 @@ public class V2TeleOPMeet2 extends LinearOpMode{
                     pp2Pos = ppBoardDrop +diffyDiff;
                     ppAngle = 0.6; //Limit 0.82
                     break;
-
-
-
                 case 7: //Drops the Outermost
                     claw2Pos = 0;
                     break;
@@ -266,16 +269,13 @@ public class V2TeleOPMeet2 extends LinearOpMode{
                 case 9:
                     pp1Pos = ppBoardDrop;
                     pp2Pos = ppBoardDrop;
-                    if (drive.diffyLeftPos()==drive.diffyRightPos()){transferState = 0;}
+                    transferState = 0;
                     break;
             }
 
 
             telemetry.addData("pp1Pos",pp1Pos);
             telemetry.addData("pp2Pos",pp2Pos);
-            telemetry.addData("encoderpp1",drive.diffyLeftPos());
-            telemetry.addData("encoderpp2",drive.diffyRightPos());
-
 
 
 
@@ -291,9 +291,10 @@ public class V2TeleOPMeet2 extends LinearOpMode{
             drive.planeRelease.setPosition(planeReleasePos);
 
             //Unified External Motor Action
-            drive.lift1.setPower(liftPower);
             drive.lift2.setPower(liftPower);
             drive.intake.setPower(intakePower);
+            drive.climb1.setPower(ratchet);
+            drive.climb2.setPower(ratchet);
 
 
             //Debug
@@ -307,9 +308,7 @@ public class V2TeleOPMeet2 extends LinearOpMode{
             ext_past = currentGamepad2.right_trigger;
             telemetry.update();
 
-
-            sleep(10);
         }
-    }   // end method doCameraSwitching()
+    }
     }
 

@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -20,12 +21,12 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 
 @Config
-@TeleOp (name = "V2 Meet 2 TeleOp",group = "TeleOP")
+@Disabled
+@TeleOp (name = "V2 Mesajdsajdsajet 2 TeleOp",group = "TeleOP")
 public class V3TeleOPMeet2 extends LinearOpMode{
 
     private VisionPortal visionPortal;
     private AprilTagProcessor aprilTag;
-
 
     private void initAprilTag() {
         aprilTag = new AprilTagProcessor.Builder().build();

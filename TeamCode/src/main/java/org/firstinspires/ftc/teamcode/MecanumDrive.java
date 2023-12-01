@@ -102,7 +102,7 @@ public final class MecanumDrive {
 
     public final DcMotorEx leftFront, leftBack, rightBack, rightFront;
     public DcMotorEx lift1, lift2;
-    public DcMotor intake;
+    public DcMotor intake, climb1, climb2;
     public Servo claw1, claw2, flip1, flip2, ext1, ext2, placerPivot1, placerPivot2, planeRelease, ppAngle;
     public AnalogInput diffyLeftEnc, diffyRightEnc;
     public DistanceSensor boardDist;
@@ -220,8 +220,8 @@ public final class MecanumDrive {
          *  Expansion Hub (Left Side):
          *  Motors:
          *      0: lift1
-         *      1: lift2
-         *      2: EMPTY
+         *      1: climb1
+         *      2: climb2
          *      3: intake
          *  Servos:
          *      0: flip1
@@ -241,7 +241,6 @@ public final class MecanumDrive {
          *
          */
 
-
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
         leftBack = hardwareMap.get(DcMotorEx.class, "leftBack");
         rightBack = hardwareMap.get(DcMotorEx.class, "rightBack");
@@ -255,12 +254,9 @@ public final class MecanumDrive {
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        lift1 = hardwareMap.get(DcMotorEx.class, "lift1");
         lift2 = hardwareMap.get(DcMotorEx.class, "lift2");
-        lift1.setDirection(DcMotorSimple.Direction.REVERSE);
         lift2.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         intake = hardwareMap.get(DcMotor.class,"intake");
 
@@ -291,6 +287,10 @@ public final class MecanumDrive {
 
         boardDist = hardwareMap.get(DistanceSensor.class, "boardDist");
 
+        climb1 = hardwareMap.get(DcMotor.class,"climb1");
+        climb2 = hardwareMap.get(DcMotor.class,"climb2");
+        climb1.setDirection(DcMotorSimple.Direction.REVERSE);
+
         imu = hardwareMap.get(IMU.class, "imu");
 
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
@@ -303,18 +303,12 @@ public final class MecanumDrive {
         localizer = new ThreeDeadWheelLocalizer(hardwareMap, PARAMS.inPerTick);
     }
 
-
     public double diffyLeftPos(){
         return diffyLeftEnc.getVoltage()/3.3*(360/355);
     }
     public double diffyRightPos(){
         return diffyRightEnc.getVoltage()/3.3*(360/355);
     }
-
-
-
-
-
 
     public void intakeOn(){
         intake.setPower(0.727);
