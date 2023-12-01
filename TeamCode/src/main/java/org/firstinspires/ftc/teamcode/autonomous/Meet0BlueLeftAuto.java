@@ -29,7 +29,7 @@ public class Meet0BlueLeftAuto extends LinearOpMode {
     public int color = 0;
 
     public void runOpMode(){
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(11.5, 60, toRadians(270)));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(11.5, 60, toRadians(90)));
 
         initVision();
 

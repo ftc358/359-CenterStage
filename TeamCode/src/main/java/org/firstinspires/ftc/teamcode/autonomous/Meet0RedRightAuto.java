@@ -35,14 +35,14 @@ public class Meet0RedRightAuto extends LinearOpMode {
     public int color = 0;
 
     public void runOpMode(){
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(12, -60, toRadians(90)));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(12, -60, toRadians(270)));
 
         initVision();
-        drive.clawGrab();
+        //drive.clawGrab();
         sleep(500);
-        drive.ppHold();
+        //drive.ppHold();
         sleep(500);
-        drive.extendZero();
+       // drive.extendZero();
 
 
 //        drive.placerPivot1.setPosition(RoboConstants.ppGet);
@@ -89,11 +89,11 @@ public class Meet0RedRightAuto extends LinearOpMode {
                             .splineToLinearHeading(new Pose2d(15.5, -47, toRadians(-92)),0)
                             .build()));
         }
-        drive.ppGround();
+        //drive.ppGround();
         sleep(2000);
-        drive.dropOut();
+        //drive.dropOut();
         sleep(1000);
-        drive.ppBoard();
+        //drive.ppBoard();
 
         if (color == 1) {
             runBlocking(       new SequentialAction(
@@ -117,11 +117,11 @@ public class Meet0RedRightAuto extends LinearOpMode {
 
 
         sleep(1000);
-        drive.dropAll();
+        //drive.dropAll();
         sleep(2000);
-        drive.bucketVertical();
+        //drive.bucketVertical();
         sleep(1000);
-        drive.ppZero();
+        //drive.ppZero();
         sleep(1000);
                runBlocking( new SequentialAction(
                         drive.actionBuilder(drive.pose)
