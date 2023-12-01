@@ -18,8 +18,8 @@ import org.firstinspires.ftc.teamcode.vision.BlueDetectionLeft;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-@Disabled
-@Autonomous(name = "Meet 0 Autonomous Blue Far Left",group = "Autonomous")
+
+@Autonomous
 public class Meet0BlueFarLeftAuto extends LinearOpMode {
     private VisionPortal visionPortal;
     private AprilTagProcessor aprilTagProcessor;

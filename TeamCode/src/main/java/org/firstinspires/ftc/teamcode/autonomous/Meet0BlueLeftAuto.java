@@ -20,7 +20,7 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 
-@Autonomous(name = "Meet 0 Autonomous Blue Left",group = "Autonomous")
+@Autonomous
 public class Meet0BlueLeftAuto extends LinearOpMode {
     private VisionPortal visionPortal;
     private AprilTagProcessor aprilTagProcessor;
@@ -28,7 +28,7 @@ public class Meet0BlueLeftAuto extends LinearOpMode {
     public int color = 0;
 
     public void runOpMode(){
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(11.5, 60, toRadians(270)));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(11.5, 60, toRadians(90)));
 
         initVision();
 
