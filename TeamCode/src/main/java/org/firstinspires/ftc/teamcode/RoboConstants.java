@@ -5,7 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 
 @Config
 public class RoboConstants {
-    public static double diffyDiff = 0.2;
+    public static double diffyDiff = 0.25;
 
     public static double rapidTrigger_thr = 0.1;
     public static double extension_sens = 0.727;
@@ -16,9 +16,9 @@ public class RoboConstants {
     public static double flip_dump = 0.6;
     public static double flip_vert = 0.15;
 
-    public static double ppGet = 0.1;
-    public static double ppHold = 0.21; //was 0.21
-    public static double ppBoardDrop = 0.80;
+    public static double ppGet = 0.05;
+    public static double ppHold = 0.22; //was 0.21
+    public static double ppBoardDrop = 0.7;
 
     public static double liftIdle = 0.001;
     public static double liftDown = -0.6;

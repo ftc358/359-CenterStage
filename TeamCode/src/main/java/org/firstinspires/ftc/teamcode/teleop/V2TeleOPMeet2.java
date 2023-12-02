@@ -87,10 +87,8 @@ public class V2TeleOPMeet2 extends LinearOpMode{
 
     boolean testingScheme;
     boolean slowflag = false;
-    int previousState = 0;
-    int flipped = 1;
-    int diffyflip = 2;
     double microAdjust = 0;
+    int dropState = 0;
 
 
 
@@ -173,12 +171,13 @@ public class V2TeleOPMeet2 extends LinearOpMode{
             drive.updatePoseEstimate();
 
             //Bucket Flip
-            flipPos = (currentGamepad2.dpad_left)?flip_dump:((currentGamepad2.left_trigger - ext_past) > 0)?flip_intake:flip_vert;
+            flipPos = (currentGamepad2.dpad_down)?flip_dump:((currentGamepad2.left_trigger - ext_past) > 0)?flip_intake:flip_vert;
 
             //Intake Trigger
-            intakePower = (currentGamepad2.left_trigger > 0 && !currentGamepad2.dpad_left) ? intakeSpeed : (currentGamepad2.left_bumper || currentGamepad2.dpad_left) ? -1 : 0;
+            intakePower = (currentGamepad2.left_trigger > 0 && !currentGamepad2.dpad_down) ? intakeSpeed : (currentGamepad2.left_bumper || currentGamepad2.dpad_down) ? -1 : 0;
 
             //Extension Trigger
+//            extPos = 0.5;
             extPos = (currentGamepad2.left_trigger >= 0.1) ? (1.0 - extension_sens + currentGamepad2.left_trigger * extension_sens) * 0.8 : 0;
 
             //Lift Trigger
@@ -187,32 +186,31 @@ public class V2TeleOPMeet2 extends LinearOpMode{
             //Attack Plan R
             planeReleasePos = (currentGamepad1.options || currentGamepad2.options) ? 0 : 1;
 
-            ratchet = currentGamepad1.left_trigger;
+            if (gamepad2.left_stick_y!=0){gamepad2.rumble(100);}
+            if (gamepad2.left_stick_y>0.2){
+            ratchet = Math.abs(-currentGamepad2.left_stick_y);} else {ratchet = 0;}
 
+            //Gripping States
+            if ((currentGamepad1.right_bumper && !previousGamepad1.right_bumper) && (transferState >= 4)){
+                dropState = (dropState +1)%5;
+            }
 
             //Transfer States
-            if (currentGamepad2.x && !previousGamepad2.x && (transferState<=4 ||transferState==7 ||transferState ==8)) {
-                transferState = (transferState + 1) % 10 ;
-            } else if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper && (transferState == 4 || transferState == 5 || transferState == 6)){
-                transferState = 7;
-                if (drive.boardDist.getDistance(DistanceUnit.INCH)<9){slowflag = true;}else{slowflag=false;}
-            } else if (currentGamepad2.square && !previousGamepad2.square && (transferState == 4)){ //turns the diffy left
-                transferState = 5;
-                previousState = 5;
-            } else if (currentGamepad2.circle && !previousGamepad2.circle && (transferState == 4)){ //turns the diffy right
-                transferState = 6;
-                previousState = 6;
 
-            } else if ((currentGamepad1.square && !previousGamepad1.square || currentGamepad1.circle && !previousGamepad1.circle)&&  (previousState == 5 || previousState ==6) ){
-                transferState = 4;
-                previousState = 0;
+            if (currentGamepad2.x && !previousGamepad2.x && (transferState<=4 || transferState==7)) {
+                transferState = (transferState + 1) % 8 ;
             }
 
 
-            else if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper && transferState == 8) { //Resets down.
-                transferState = 9;
+            else if (currentGamepad2.dpad_left && !previousGamepad2.dpad_left && ((transferState == 4)||(transferState == 6))){ //turns the diffy left
+                transferState = 5;
+            } else if (currentGamepad2.dpad_right && !previousGamepad2.dpad_right && ((transferState == 4)||(transferState==5))){ //turns the diffy right
+                transferState = 6;
+
+            } else if ((currentGamepad2.dpad_up && !previousGamepad2.dpad_up)&& (transferState == 5 || transferState ==6) ){
+                transferState = 4;
             } else if (currentGamepad2.a) {//Reset Anytime
-                transferState = 9;
+                transferState = 7;
             }
 
                             //Transfer Switch-Case
@@ -227,50 +225,71 @@ public class V2TeleOPMeet2 extends LinearOpMode{
                     flipPos = flip_lift;
                     break;
                 case 2: //pp up a bit
+
                     pp1Pos = 0.1;
                     pp2Pos = 0.1;
-                    if (drive.diffyRightPos()==0.1){//Tune this pos.
-                        transferState = 3;
-                    }
+                    claw1Pos = claw1Grab;
+                    claw2Pos = claw2Grab;
                     break;
                 case 3: //hold and goes to Holding Position
+                    extPos = 0.1;
+                    flipPos = 0.15;
                     pp1Pos = ppHold;
                     pp2Pos = ppHold;
                     claw1Pos = claw1Grab;
                     claw2Pos = claw2Grab;
                     break;
 
-                case 4: //Goes to Board Dropping Position // Ready to Drop Right Away
+                case 4: //Goes to Board Dropping Position // Diffy Mid
                     pp1Pos = ppBoardDrop;
                     pp2Pos = ppBoardDrop;
 
-                    microAdjust = gamepad2.left_stick_x;
-                    pp1Pos += microAdjust;
-                    pp2Pos -= microAdjust;
+                    microAdjust = (-gamepad1.left_trigger+gamepad1.right_trigger+gamepad2.right_stick_x)/2*0.15;
+                    pp1Pos -= microAdjust;
+                    pp2Pos += microAdjust;
                     break;
 
                 case 5: //Diffy Left
                     pp1Pos = ppBoardDrop +diffyDiff;
                     pp2Pos = ppBoardDrop -diffyDiff;
                     ppAngle = 0.4; //Limit 0.18
+                    microAdjust = (-gamepad1.left_trigger+gamepad1.right_trigger+gamepad2.right_stick_x)/2*0.15;
+                    pp1Pos -= microAdjust;
+                    pp2Pos += microAdjust;
                     break;
                 case 6: //Diffy Right
                     pp1Pos = ppBoardDrop -diffyDiff;
                     pp2Pos = ppBoardDrop +diffyDiff;
                     ppAngle = 0.6; //Limit 0.82
+                    microAdjust = (-gamepad2.left_trigger+gamepad2.right_trigger+gamepad2.right_stick_x)/2*0.15;
+                    pp1Pos -= microAdjust;
+                    pp2Pos += microAdjust;
                     break;
-                case 7: //Drops the Outermost
+
+                case 7: //homes
+                    pp1Pos = ppBoardDrop;
+                    pp2Pos = ppBoardDrop;
+                    break;
+            }
+
+
+            switch (dropState){
+                case 0:
+                    break;
+                case 1:
                     claw2Pos = 0;
                     break;
-                case 8: //Drops the Innermost
+                case 2:
                     claw1Pos = 0;
                     claw2Pos = 0;
                     break;
-                case 9:
-                    pp1Pos = ppBoardDrop;
-                    pp2Pos = ppBoardDrop;
-                    transferState = 0;
+                case 3:
+                    transferState = 7;
                     break;
+                case 4:
+                    transferState = 0;
+                    dropState = 0;
+
             }
 
 
@@ -305,6 +324,8 @@ public class V2TeleOPMeet2 extends LinearOpMode{
 
 
             telemetry.addData("Current Transfer State ", transferState);
+            telemetry.addData("Current Grab State ", dropState);
+
             ext_past = currentGamepad2.right_trigger;
             telemetry.update();
 

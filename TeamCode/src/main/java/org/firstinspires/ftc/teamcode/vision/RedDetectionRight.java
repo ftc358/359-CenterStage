@@ -37,17 +37,17 @@ public class RedDetectionRight implements VisionProcessor {
     public static double rightPixels;
     public static double centerPixels;
 
-    public static double thresh = 0.022;
+    public static double thresh = 0.07;
 
     static final Rect LEFT_ROI = new Rect(
-            new Point(160, 130),
-            new Point(160+80, 140+75));
+            new Point(0, 120),
+            new Point(100, 320));
     static final Rect CENTER_ROI = new Rect(
-            new Point(250,100),
-            new Point(250+90,100+75));
+            new Point(140,120),
+            new Point(140+300,120+130));
     static final Rect RIGHT_ROI = new Rect(
-            new Point(360, 110),
-            new Point(360+70, 130+75));
+            new Point(500, 120),
+            new Point(640, 320));
 
     Scalar No = new Scalar(255, 0, 0);
     Scalar Yes = new Scalar(0, 255, 0);
@@ -65,7 +65,6 @@ public class RedDetectionRight implements VisionProcessor {
 
     @Override
     public Object processFrame(Mat frame, long captureTimeNanos) {
-        Core.rotate(frame,frame,Core.ROTATE_180);
         Imgproc.blur(frame,frame, new Size(4,4));
         Imgproc.cvtColor(frame, mat, Imgproc.COLOR_RGB2HSV);
 

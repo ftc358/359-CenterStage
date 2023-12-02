@@ -34,17 +34,18 @@ public class BlueDetectionLeft implements VisionProcessor {
     public static double rightPixels;
     public static double centerPixels;
 
-    public static double thresh = 0.12;
+    public static double thresh = 0.;
+
 
     static final Rect LEFT_ROI = new Rect(
-            new Point(240, 130),
-            new Point(240+80, 140+75));
+            new Point(0, 120),
+            new Point(100, 320));
     static final Rect CENTER_ROI = new Rect(
-            new Point(330,100),
-            new Point(330+90,100+75));
+            new Point(140,120),
+            new Point(140+300,120+130));
     static final Rect RIGHT_ROI = new Rect(
-            new Point(440, 110),
-            new Point(440+70, 130+75));
+            new Point(500, 120),
+            new Point(640, 320));
 
     Scalar No = new Scalar(255, 0, 0);
     Scalar Yes = new Scalar(0, 255, 0);
@@ -62,7 +63,6 @@ public class BlueDetectionLeft implements VisionProcessor {
 
     @Override
     public Object processFrame(Mat frame, long captureTimeNanos) {
-        Core.rotate(frame,frame,Core.ROTATE_180);
         Imgproc.blur(frame,frame, new Size(4,4));
 
         Imgproc.cvtColor(frame, mat, Imgproc.COLOR_RGB2HSV);
