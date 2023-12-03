@@ -28,7 +28,7 @@ public class Meet0RedFarRightAuto extends LinearOpMode {
     public int color = 0;
 
     public void runOpMode(){
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(-36, -60, toRadians(90)));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(-36, -62, toRadians(270)));
 
         drive.extendZero();
         initVision();
@@ -54,7 +54,7 @@ public class Meet0RedFarRightAuto extends LinearOpMode {
         if (color == 1) {
             runBlocking(new SequentialAction(
                     drive.actionBuilder(drive.pose)
-                            .splineToLinearHeading(new Pose2d(7-48, -32, toRadians(0)), 90)
+                            .splineToLinearHeading(new Pose2d(-36, -62, toRadians(0)), 90)
                             .build()));
 
         } else if (color ==2){

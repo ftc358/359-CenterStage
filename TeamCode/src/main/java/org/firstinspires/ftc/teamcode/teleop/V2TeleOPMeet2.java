@@ -79,7 +79,6 @@ public class V2TeleOPMeet2 extends LinearOpMode{
 
 
 
-    Gamepad.RumbleEffect batteryCritical, drop1Ready, drop2Ready;
     Gamepad currentGamepad1 = new Gamepad();
     Gamepad currentGamepad2 = new Gamepad();
     Gamepad previousGamepad1 = new Gamepad();
@@ -112,31 +111,18 @@ public class V2TeleOPMeet2 extends LinearOpMode{
 
 
         int transferState = 0;
-        while (opModeInInit() && !opModeIsActive()){
-            if (gamepad1.ps){
-                telemetry.addLine("Control Scheme: Testing");
-                testingScheme = true;
-                gamepad1.rumble(2000);
-            }
-        }
+
+
         waitForStart();
         while (opModeIsActive()) {
             //trust me bro - jonathan
             //in switchCase i trust - lucas
-            if (testingScheme){
-                telemetry.addLine("CONTROLLER A ONLY");
-                previousGamepad1.copy(currentGamepad1);
-                previousGamepad2.copy(currentGamepad1);
-                currentGamepad1.copy(gamepad1);
-                currentGamepad2.copy(gamepad1);}
-            else {
-                previousGamepad1.copy(currentGamepad1);
-                previousGamepad2.copy(currentGamepad2);
-                currentGamepad1.copy(gamepad1);
-                currentGamepad2.copy(gamepad2);
-            }
 
 
+            previousGamepad1.copy(currentGamepad1);
+            previousGamepad2.copy(currentGamepad2);
+            currentGamepad1.copy(gamepad1);
+            currentGamepad2.copy(gamepad2);
             //Power Systems
             currentVoltage = drive.voltageSensor.getVoltage();//Could Use for Something
             leftFrontC = drive.leftFront.getCurrent(CurrentUnit.AMPS);
@@ -154,8 +140,6 @@ public class V2TeleOPMeet2 extends LinearOpMode{
             telemetry.addData("Total Current (A)", fiveC);
             telemetry.addData("Power (W)", driveTrainPower);
             telemetry.addData("Max Drive Power (W)", maxPower);
-
-
 
             if (slowflag){
                 straight = (-gamepad1.left_stick_y/2 > 0.1) ? (-gamepad1.left_stick_y/2 + 0.26) : (-gamepad1.left_stick_y < -0.1) ? (-gamepad1.left_stick_y - 0.26) : 0;
@@ -186,9 +170,11 @@ public class V2TeleOPMeet2 extends LinearOpMode{
             //Attack Plan R
             planeReleasePos = (currentGamepad1.options || currentGamepad2.options) ? 0 : 1;
 
+            //Ratchet Power
+            ratchet = Math.abs(currentGamepad2.left_stick_y);
+
+
             if (gamepad2.left_stick_y!=0){gamepad2.rumble(100);}
-            if (gamepad2.left_stick_y>0.2){
-            ratchet = Math.abs(-currentGamepad2.left_stick_y);} else {ratchet = 0;}
 
             //Gripping States
             if ((currentGamepad1.right_bumper && !previousGamepad1.right_bumper) && (transferState >= 4)){
@@ -196,20 +182,18 @@ public class V2TeleOPMeet2 extends LinearOpMode{
             }
 
             //Transfer States
-
-            if (currentGamepad2.x && !previousGamepad2.x && (transferState<=4 || transferState==7)) {
+            if (currentGamepad2.square && !previousGamepad2.square && (transferState<=4 || transferState==7)) {
                 transferState = (transferState + 1) % 8 ;
             }
-
-
             else if (currentGamepad2.dpad_left && !previousGamepad2.dpad_left && ((transferState == 4)||(transferState == 6))){ //turns the diffy left
                 transferState = 5;
             } else if (currentGamepad2.dpad_right && !previousGamepad2.dpad_right && ((transferState == 4)||(transferState==5))){ //turns the diffy right
                 transferState = 6;
-
             } else if ((currentGamepad2.dpad_up && !previousGamepad2.dpad_up)&& (transferState == 5 || transferState ==6) ){
                 transferState = 4;
-            } else if (currentGamepad2.a) {//Reset Anytime
+            } else if (currentGamepad2.triangle && transferState == 4) {//Reset Anytime
+                transferState = 0;
+            } else if (currentGamepad2.triangle){
                 transferState = 7;
             }
 
@@ -261,7 +245,7 @@ public class V2TeleOPMeet2 extends LinearOpMode{
                     pp1Pos = ppBoardDrop -diffyDiff;
                     pp2Pos = ppBoardDrop +diffyDiff;
                     ppAngle = 0.6; //Limit 0.82
-                    microAdjust = (-gamepad2.left_trigger+gamepad2.right_trigger+gamepad2.right_stick_x)/2*0.15;
+                    microAdjust = (-gamepad1.left_trigger+gamepad1.right_trigger+gamepad2.right_stick_x)/2*0.15;
                     pp1Pos -= microAdjust;
                     pp2Pos += microAdjust;
                     break;
@@ -289,6 +273,7 @@ public class V2TeleOPMeet2 extends LinearOpMode{
                 case 4:
                     transferState = 0;
                     dropState = 0;
+                    break;
 
             }
 
@@ -329,7 +314,8 @@ public class V2TeleOPMeet2 extends LinearOpMode{
             ext_past = currentGamepad2.right_trigger;
             telemetry.update();
 
-        }
+
     }
-    }
+}
+}
 

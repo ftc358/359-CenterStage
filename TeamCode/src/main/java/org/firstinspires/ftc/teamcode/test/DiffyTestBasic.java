@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.test;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
@@ -37,6 +38,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.RoboConstants;
 
 @TeleOp(name = "Diffy Test PP", group = "Testing")
+@Disabled
 public class DiffyTestBasic extends LinearOpMode {
 
     Servo ppAngle, pp1, pp2, grab1, grab2;

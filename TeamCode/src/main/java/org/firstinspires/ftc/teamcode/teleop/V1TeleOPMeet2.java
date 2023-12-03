@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @TeleOp (name = "V1 Meet 2 TeleOp",group = "TeleOP")
+@Disabled
 public class V1TeleOPMeet2 extends LinearOpMode{
 
     private VisionPortal visionPortal;

@@ -36,32 +36,17 @@ public class Meet0RedRightAuto extends LinearOpMode {
 
     public void runOpMode(){
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(12, -60, toRadians(270)));
-
         initVision();
-        //drive.clawGrab();
-        sleep(500);
-        //drive.ppHold();
-        sleep(500);
-       // drive.extendZero();
 
+        drive.extendZero();
+        drive.ppHold();
+        sleep(500);
+        drive.clawGrab();
 
-//        drive.placerPivot1.setPosition(RoboConstants.ppGet);
-//        drive.placerPivot2.setPosition(RoboConstants.ppGet);
-//        sleep(500);
-//        drive.bucketTransfer();
-//        sleep(500);
-//        drive.clawGrab();
-//        sleep(500);
-//        drive.placerPivot1.setPosition(0.1);
-//        drive.placerPivot2.setPosition(0.1);
-//        sleep(500);
-//        drive.bucketVertical();
-//        sleep(500);
-//        drive.ppHold();
         while(opModeInInit() &&!isStarted()){
             color = RedDetectionRight.getReadout();
 
-            telemetry.addData("Useless sees ",color);
+            telemetry.addData("Me sees ",color);
             telemetry.addData("LeftValue",RedDetectionRight.leftValue);
             telemetry.addData("CenterValue",RedDetectionRight.centerValue);
             telemetry.addData("RightValue",RedDetectionRight.rightValue);
@@ -70,64 +55,63 @@ public class Meet0RedRightAuto extends LinearOpMode {
 
 
         waitForStart();
-
-        if (color == 1) {
+        if (color == 1 || color == 0) {
             runBlocking(new SequentialAction(
                     drive.actionBuilder(drive.pose)
-                            .splineToLinearHeading(new Pose2d(11, -33, toRadians(0)), 90)
+                            .lineToYConstantHeading(-50)
+                            .splineToLinearHeading(new Pose2d(15, -32, toRadians(0)), 90)
                             .build()));
 
         } else if (color ==2){
             runBlocking(new SequentialAction(
                     drive.actionBuilder(drive.pose)
-                            .splineToLinearHeading(new Pose2d(11,-36.5, toRadians(270)),0)
+                            .lineToYConstantHeading(-36.5)
                             .build()));
 
-        } else if (color == 3 || color == 0) {
+        } else if (color == 3 ){
             runBlocking(new SequentialAction(
                     drive.actionBuilder(drive.pose)
-                            .splineToLinearHeading(new Pose2d(15.5, -47, toRadians(-92)),0)
+                            .lineToYConstantHeading(-50)
+                            .splineToLinearHeading(new Pose2d(15.5, -30, toRadians(-92)),0)
                             .build()));
         }
-        //drive.ppGround();
+        drive.ppGround();
         sleep(2000);
-        //drive.dropOut();
+        drive.dropOut();
         sleep(1000);
-        //drive.ppBoard();
+        drive.ppBoard();
 
-        if (color == 1) {
+        if (color == 1 || color == 0) {
             runBlocking(       new SequentialAction(
                     drive.actionBuilder(drive.pose)
-                            .splineToLinearHeading(new Pose2d(46, -23, toRadians(178)), toRadians(0))
+                            .splineToLinearHeading(new Pose2d(50.5, -29, toRadians(180)), toRadians(0))
                             .build()
             ));
         } else if (color ==2){
             runBlocking(       new SequentialAction(
                     drive.actionBuilder(drive.pose)
-                            .splineToLinearHeading(new Pose2d(46, -32, toRadians(178)), toRadians(0))
+                            .splineToLinearHeading(new Pose2d(50, -32, toRadians(180)), toRadians(0))
                             .build()
             ));
-        } else if (color == 3 || color == 0) {
+        } else if (color == 3) {
             runBlocking(       new SequentialAction(
                     drive.actionBuilder(drive.pose)
-                            .splineToLinearHeading(new Pose2d(46, -39, toRadians(178)), toRadians(0))
+                            .splineToLinearHeading(new Pose2d(50, -39, toRadians(180)), toRadians(0))
                             .build()
             ));
         }
 
 
         sleep(1000);
-        //drive.dropAll();
+        drive.dropAll();
         sleep(2000);
-        //drive.bucketVertical();
+        drive.bucketVertical();
         sleep(1000);
-        //drive.ppZero();
+        drive.ppZero();
         sleep(1000);
                runBlocking( new SequentialAction(
                         drive.actionBuilder(drive.pose)
-                                .strafeTo(new Vector2d(53,-55))
-                                //.strafeTo(new Vector2d(-55,-35))
-
+                                .strafeTo(new Vector2d(53,-58))
                                 .build()
                 ));
 
@@ -136,8 +120,6 @@ public class Meet0RedRightAuto extends LinearOpMode {
 
 
     private void initVision() {
-        // Create the AprilTag processor by using a builder.
-        List myPortalsList;
 
         visionPortal1 = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))

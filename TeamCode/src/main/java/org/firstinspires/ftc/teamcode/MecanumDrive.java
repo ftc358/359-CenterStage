@@ -67,9 +67,9 @@ public final class MecanumDrive {
         public double kA = 0.00001815;
 
         // path profile parameters (in inches)
-        public double maxWheelVel = 80;
-        public double minProfileAccel = -50;
-        public double maxProfileAccel = 80;
+        public double maxWheelVel = 50;
+        public double minProfileAccel = -30;
+        public double maxProfileAccel = 50;
 
         // turn profile parameters (in radians)
         public double maxAngVel = Math.PI; // shared with path
@@ -356,12 +356,12 @@ public final class MecanumDrive {
         placerPivot2.setPosition(RoboConstants.ppHold);
     }
     public void ppGround(){
-        placerPivot1.setPosition(1);//as far as it can go
-        placerPivot2.setPosition(1);
+        placerPivot1.setPosition(0.85);//as far as it can go
+        placerPivot2.setPosition(0.85);
     }
     public void ppZero(){
-        placerPivot1.setPosition(0);//as far as it can go
-        placerPivot2.setPosition(0);
+        placerPivot1.setPosition(RoboConstants.ppGet);//as far as it can go
+        placerPivot2.setPosition(RoboConstants.ppGet);
     }
     public void dropOut(){
         claw2.setPosition(0);

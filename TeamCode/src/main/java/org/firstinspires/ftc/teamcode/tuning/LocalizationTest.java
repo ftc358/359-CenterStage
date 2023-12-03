@@ -42,6 +42,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
+@Disabled
 public class LocalizationTest extends LinearOpMode {
 
     private AprilTagProcessor aprilTag;
