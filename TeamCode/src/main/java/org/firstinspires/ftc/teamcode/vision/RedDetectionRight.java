@@ -37,7 +37,7 @@ public class RedDetectionRight implements VisionProcessor {
     public static double rightPixels;
     public static double centerPixels;
 
-    public static double thresh = 0.07;
+    public static double thresh = 0.05;
 
     static final Rect LEFT_ROI = new Rect(
             new Point(0, 120),

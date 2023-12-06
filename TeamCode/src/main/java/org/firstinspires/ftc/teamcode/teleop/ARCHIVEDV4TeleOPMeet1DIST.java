@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.RoboConstants;
 
 @TeleOp (name = "V4 Meet 1 TeleOp",group = "TeleOP")
 @Disabled
-public class V4TeleOPMeet1DIST extends LinearOpMode{
+public class ARCHIVEDV4TeleOPMeet1DIST extends LinearOpMode{
     // saved on codeshare.io/lmaocopeharderpeopleofpaper727
 
     // Dashboard Vars

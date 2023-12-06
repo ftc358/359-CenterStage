@@ -65,14 +65,16 @@ public class Meet0RedRightAuto extends LinearOpMode {
         } else if (color ==2){
             runBlocking(new SequentialAction(
                     drive.actionBuilder(drive.pose)
-                            .lineToYConstantHeading(-36.5)
+                            .strafeToConstantHeading(new Vector2d(16.2,-36.1))
+                            //.lineToYConstantHeading(-36.5)
+
                             .build()));
 
         } else if (color == 3 ){
             runBlocking(new SequentialAction(
                     drive.actionBuilder(drive.pose)
                             .lineToYConstantHeading(-50)
-                            .splineToLinearHeading(new Pose2d(15.5, -30, toRadians(-92)),0)
+                            .splineToLinearHeading(new Pose2d(23.6, -47, toRadians(-92)),0)
                             .build()));
         }
         drive.ppGround();
@@ -84,19 +86,19 @@ public class Meet0RedRightAuto extends LinearOpMode {
         if (color == 1 || color == 0) {
             runBlocking(       new SequentialAction(
                     drive.actionBuilder(drive.pose)
-                            .splineToLinearHeading(new Pose2d(50.5, -29, toRadians(180)), toRadians(0))
+                            .splineToLinearHeading(new Pose2d(49.1, -27, toRadians(180)), toRadians(0))
                             .build()
             ));
         } else if (color ==2){
             runBlocking(       new SequentialAction(
                     drive.actionBuilder(drive.pose)
-                            .splineToLinearHeading(new Pose2d(50, -32, toRadians(180)), toRadians(0))
+                            .splineToLinearHeading(new Pose2d(49.6, -33, toRadians(180)), toRadians(0))
                             .build()
             ));
         } else if (color == 3) {
             runBlocking(       new SequentialAction(
                     drive.actionBuilder(drive.pose)
-                            .splineToLinearHeading(new Pose2d(50, -39, toRadians(180)), toRadians(0))
+                            .splineToLinearHeading(new Pose2d(48.7, -41.5, toRadians(180)), toRadians(0))
                             .build()
             ));
         }

@@ -4,24 +4,20 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.RoboConstants;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-import java.util.List;
 @Config
 @TeleOp (name = "V2 Meet 2 TeleOp",group = "TeleOP")
-public class V2TeleOPMeet2 extends LinearOpMode{
+@Disabled
+public class ARCHIVEDV2TeleOPMeet2 extends LinearOpMode{
 
     // Dashboard Vars
     public static double diffyDiff = RoboConstants.diffyDiff;
@@ -156,9 +152,10 @@ public class V2TeleOPMeet2 extends LinearOpMode{
 
             //Bucket Flip
             flipPos = (currentGamepad2.dpad_down)?flip_dump:((currentGamepad2.left_trigger - ext_past) > 0)?flip_intake:flip_vert;
+            if (currentGamepad2.left_bumper){flipPos -= 0.05;}
 
             //Intake Trigger
-            intakePower = (currentGamepad2.left_trigger > 0 && !currentGamepad2.dpad_down) ? intakeSpeed : (currentGamepad2.left_bumper || currentGamepad2.dpad_down) ? -1 : 0;
+            intakePower = (currentGamepad2.left_trigger > 0 && !currentGamepad2.dpad_down) ? intakeSpeed : (currentGamepad2.dpad_down || currentGamepad2.dpad_down) ? -1 : 0;
 
             //Extension Trigger
 //            extPos = 0.5;
@@ -168,7 +165,7 @@ public class V2TeleOPMeet2 extends LinearOpMode{
             liftPower = (currentGamepad2.right_trigger > 0) ? currentGamepad2.right_trigger : (currentGamepad2.right_bumper) ? liftDown : liftIdle;
 
             //Attack Plan R
-            planeReleasePos = (currentGamepad1.options || currentGamepad2.options) ? 0 : 1;
+            planeReleasePos = (currentGamepad1.options || currentGamepad2.options) ? 1 : 0;
 
             //Ratchet Power
             ratchet = Math.abs(currentGamepad2.left_stick_y);
@@ -177,12 +174,12 @@ public class V2TeleOPMeet2 extends LinearOpMode{
             if (gamepad2.left_stick_y!=0){gamepad2.rumble(100);}
 
             //Gripping States
-            if ((currentGamepad1.right_bumper && !previousGamepad1.right_bumper) && (transferState >= 4)){
+            if (((currentGamepad1.left_bumper && !previousGamepad1.left_bumper)||(currentGamepad1.right_bumper && !previousGamepad1.right_bumper)) && (transferState >= 4)){
                 dropState = (dropState +1)%5;
             }
 
             //Transfer States
-            if (currentGamepad2.square && !previousGamepad2.square && (transferState<=4 || transferState==7)) {
+            if (currentGamepad2.square && !previousGamepad2.square && (transferState<4 || transferState==7)) {
                 transferState = (transferState + 1) % 8 ;
             }
             else if (currentGamepad2.dpad_left && !previousGamepad2.dpad_left && ((transferState == 4)||(transferState == 6))){ //turns the diffy left
@@ -227,6 +224,7 @@ public class V2TeleOPMeet2 extends LinearOpMode{
                 case 4: //Goes to Board Dropping Position // Diffy Mid
                     pp1Pos = ppBoardDrop;
                     pp2Pos = ppBoardDrop;
+                    slowflag=true;
 
                     microAdjust = (-gamepad1.left_trigger+gamepad1.right_trigger+gamepad2.right_stick_x)/2*0.15;
                     pp1Pos -= microAdjust;
@@ -251,6 +249,7 @@ public class V2TeleOPMeet2 extends LinearOpMode{
                     break;
 
                 case 7: //homes
+                    slowflag=false;
                     pp1Pos = ppBoardDrop;
                     pp2Pos = ppBoardDrop;
                     break;
@@ -268,7 +267,11 @@ public class V2TeleOPMeet2 extends LinearOpMode{
                     claw2Pos = 0;
                     break;
                 case 3:
-                    transferState = 7;
+                    if (transferState==4){transferState = 7;
+                        dropState = 4;}
+                    else {
+                        transferState = 7;
+                    }
                     break;
                 case 4:
                     transferState = 0;

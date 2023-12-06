@@ -21,7 +21,7 @@ public class RoboConstants {
     public static double ppBoardDrop = 0.7;
 
     public static double liftIdle = 0.001;
-    public static double liftDown = -0.6;
+    public static double liftDown = -0.7;
 
     public static double intakeSpeed = 0.727;
 

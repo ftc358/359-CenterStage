@@ -38,7 +38,7 @@ public class BlueDetectionLeft implements VisionProcessor {
     public static double rightPixels;
     public static double centerPixels;
 
-    public static double thresh = 0.;
+    public static double thresh = 0.06;
 
 
     static final Rect LEFT_ROI = new Rect(
