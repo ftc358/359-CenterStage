@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.autonomous;
 
 import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
 
+import static org.firstinspires.ftc.teamcode.RoboConstants.diffyDiff;
+import static org.firstinspires.ftc.teamcode.RoboConstants.ppBoardDrop;
 import static java.lang.Math.toRadians;
 
 import android.util.Size;
@@ -59,7 +61,7 @@ public class Meet0RedRightAuto extends LinearOpMode {
             runBlocking(new SequentialAction(
                     drive.actionBuilder(drive.pose)
                             .lineToYConstantHeading(-50)
-                            .splineToLinearHeading(new Pose2d(15, -32, toRadians(0)), 90)
+                            .splineToLinearHeading(new Pose2d(15, -36, toRadians(0)), 90)
                             .build()));
 
         } else if (color ==2){
@@ -86,36 +88,32 @@ public class Meet0RedRightAuto extends LinearOpMode {
         if (color == 1 || color == 0) {
             runBlocking(       new SequentialAction(
                     drive.actionBuilder(drive.pose)
-                            .splineToLinearHeading(new Pose2d(49.1, -27, toRadians(180)), toRadians(0))
+                            .splineToLinearHeading(new Pose2d(44, -27, toRadians(180)), toRadians(0))
                             .build()
             ));
         } else if (color ==2){
             runBlocking(       new SequentialAction(
                     drive.actionBuilder(drive.pose)
-                            .splineToLinearHeading(new Pose2d(49.6, -33, toRadians(180)), toRadians(0))
+                            .splineToLinearHeading(new Pose2d(44, -33, toRadians(180)), toRadians(0))
                             .build()
             ));
+
         } else if (color == 3) {
             runBlocking(       new SequentialAction(
                     drive.actionBuilder(drive.pose)
-                            .splineToLinearHeading(new Pose2d(48.7, -41.5, toRadians(180)), toRadians(0))
+                            .splineToLinearHeading(new Pose2d(44, -39, toRadians(180)), toRadians(0))
                             .build()
             ));
         }
 
 
-        sleep(1000);
+        sleep(2000);
         drive.dropAll();
         sleep(2000);
         drive.bucketVertical();
+        drive.ppBoard();
         sleep(1000);
         drive.ppZero();
-        sleep(1000);
-               runBlocking( new SequentialAction(
-                        drive.actionBuilder(drive.pose)
-                                .strafeTo(new Vector2d(53,-58))
-                                .build()
-                ));
 
 
     }

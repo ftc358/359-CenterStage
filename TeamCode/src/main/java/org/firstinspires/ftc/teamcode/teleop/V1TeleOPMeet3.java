@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.RoboConstants;
 
 @Config
 @TeleOp (name = "V1 Meet 3 TeleOp",group = "TeleOP")
-@Disabled
 public class V1TeleOPMeet3 extends LinearOpMode{
 
     // Dashboard Vars
@@ -150,8 +149,11 @@ public class V1TeleOPMeet3 extends LinearOpMode{
             drive.updatePoseEstimate();
 
             //Bucket Flip
-            flipPos = (currentGamepad2.dpad_down)?flip_dump:((currentGamepad2.left_trigger - ext_past) > 0)?flip_intake:flip_vert;
-            if (currentGamepad2.left_bumper && !previousGamepad2.left_bumper){flipPos -= 0.05;}
+            telemetry.addData("flipThresThingy",(currentGamepad2.left_trigger - ext_past));
+            flipPos = (currentGamepad2.dpad_down)?flip_dump:((currentGamepad2.left_trigger - ext_past) <rapidTrigger_thr)?flip_intake:flip_half;
+            if (currentGamepad2.left_bumper && !previousGamepad2.left_bumper){flipPos -= 0.08;} //reversed shake
+
+
 
             //Intake Trigger
             intakePower = (currentGamepad2.left_trigger > 0 && !currentGamepad2.dpad_down) ? intakeSpeed : (currentGamepad2.dpad_down || currentGamepad2.dpad_down) ? -1 : 0;
@@ -168,6 +170,8 @@ public class V1TeleOPMeet3 extends LinearOpMode{
 
             //Ratchet Power
             ratchet = Math.abs(currentGamepad2.left_stick_y);
+            if (extPos == 0) {flipPos = flip_lift;}
+
 
 
             if (gamepad2.left_stick_y!=0){gamepad2.rumble(100);}
@@ -204,11 +208,9 @@ public class V1TeleOPMeet3 extends LinearOpMode{
                     break;
                 case 1: //bucket in
                     flipPos = flip_lift;
+                    transferState = 2;
                     break;
                 case 2: //pp up a bit
-
-                    pp1Pos = 0.1;
-                    pp2Pos = 0.1;
                     claw1Pos = claw1Grab;
                     claw2Pos = claw2Grab;
                     break;
@@ -314,7 +316,7 @@ public class V1TeleOPMeet3 extends LinearOpMode{
             telemetry.addData("Current Transfer State ", transferState);
             telemetry.addData("Current Grab State ", dropState);
 
-            ext_past = currentGamepad2.right_trigger;
+            ext_past = currentGamepad2.left_trigger;
             telemetry.update();
 
 

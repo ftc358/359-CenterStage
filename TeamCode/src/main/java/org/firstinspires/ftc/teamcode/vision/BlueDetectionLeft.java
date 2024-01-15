@@ -45,8 +45,8 @@ public class BlueDetectionLeft implements VisionProcessor {
             new Point(0, 120),
             new Point(100, 320));
     static final Rect CENTER_ROI = new Rect(
-            new Point(140,120),
-            new Point(140+300,120+130));
+            new Point(140,150),
+            new Point(140+300,150+150));
     static final Rect RIGHT_ROI = new Rect(
             new Point(500, 120),
             new Point(640, 320));

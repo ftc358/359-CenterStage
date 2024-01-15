@@ -253,7 +253,7 @@ public class ARCHIVEDV3TeleOPMeet2 extends LinearOpMode{
                 case 2: //pp up a bit
                     pp1Pos = 0.1;
                     pp2Pos = 0.1;
-                    if (drive.diffyRightPos()==0.1){//Tune this pos.
+                    if (1==0.1){//Tune this pos.
                         transferState = 3;
                     }
                     break;
@@ -293,16 +293,10 @@ public class ARCHIVEDV3TeleOPMeet2 extends LinearOpMode{
                     break;
                 case 9:
                     pp1Pos = ppBoardDrop;
-                    pp2Pos = ppBoardDrop;
-                    if (drive.diffyLeftPos()==drive.diffyRightPos()){transferState = 0;}
-                    break;
+
             }
 
 
-            telemetry.addData("pp1Pos",pp1Pos);
-            telemetry.addData("pp2Pos",pp2Pos);
-            telemetry.addData("encoderpp1",drive.diffyLeftPos());
-            telemetry.addData("encoderpp2",drive.diffyRightPos());
 
 
 

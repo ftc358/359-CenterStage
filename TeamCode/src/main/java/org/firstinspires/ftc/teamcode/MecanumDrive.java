@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.*;
 import com.acmerobotics.roadrunner.AngularVelConstraint;
@@ -52,24 +53,23 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-
-@Disabled
+@Config
 public final class MecanumDrive {
     public static class Params {
         // drive model parameters
         public double inPerTick = 0.00054;
-        public double lateralInPerTick = 0.00032;
+        public double lateralInPerTick = 0.00032; //0.00029182267527498595
         public double trackWidthTicks = 23739.782090550972;
 
         // feedforward parameters (in tick units)
         public double kS = 1.1409335689442395;
-        public double kV = 0.000075;
-        public double kA = 0.00001815;
+        public double kV = 0.000075;  //0.000084
+        public double kA = 0.00001815;  //0.00002
 
         // path profile parameters (in inches)
-        public double maxWheelVel = 50;
-        public double minProfileAccel = -30;
-        public double maxProfileAccel = 50;
+        public double maxWheelVel = 50; //20
+        public double minProfileAccel = -30;//-20
+        public double maxProfileAccel = 50; //20
 
         // turn profile parameters (in radians)
         public double maxAngVel = Math.PI; // shared with path
@@ -77,11 +77,11 @@ public final class MecanumDrive {
 
         // path controller gains
         public double axialGain = 8;
-        public double lateralGain = 14;
+        public double lateralGain = 16;
         public double headingGain = 16; // shared with turn
 
         public double axialVelGain = 0.2;
-        public double lateralVelGain = 0.2;
+        public double lateralVelGain = 0.1;
         public double headingVelGain = 0.1; // shared with turn
     }
 
@@ -104,7 +104,7 @@ public final class MecanumDrive {
     public DcMotorEx lift1, lift2;
     public DcMotor intake, climb1, climb2;
     public Servo claw1, claw2, flip1, flip2, ext1, ext2, placerPivot1, placerPivot2, planeRelease, ppAngle;
-    public AnalogInput diffyLeftEnc, diffyRightEnc;
+    public AnalogInput extPosEnc,difPosEnc;
     public DistanceSensor boardDist;
     public TouchSensor liftHome;
 
@@ -240,6 +240,8 @@ public final class MecanumDrive {
          *
          *
          */
+        extPosEnc = hardwareMap.get(AnalogInput.class,"extPosEnc");
+        difPosEnc = hardwareMap.get(AnalogInput.class,"difPosEnc");
 
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
         leftBack = hardwareMap.get(DcMotorEx.class, "leftBack");
@@ -259,6 +261,7 @@ public final class MecanumDrive {
 
         lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         intake = hardwareMap.get(DcMotor.class,"intake");
+        intake.setDirection(DcMotorSimple.Direction.REVERSE);
 
         flip1 = hardwareMap.get(Servo.class,"flip1");
         flip2 = hardwareMap.get(Servo.class,"flip2");
@@ -274,16 +277,11 @@ public final class MecanumDrive {
 
         claw1 = hardwareMap.get(Servo.class,"claw1");
         claw2 = hardwareMap.get(Servo.class,"claw2");
-        claw1.setDirection(Servo.Direction.REVERSE);
-
         ppAngle = hardwareMap.get(Servo.class, "ppAngle");
 
         planeRelease = hardwareMap.get(Servo.class, "planeRelease");
 
         liftHome = hardwareMap.get(TouchSensor.class,"liftHome");
-
-        diffyLeftEnc = hardwareMap.get(AnalogInput.class, "diffyLeftEnc");
-        diffyRightEnc = hardwareMap.get(AnalogInput.class,"diffyRightEnc");
 
         boardDist = hardwareMap.get(DistanceSensor.class, "boardDist");
 
@@ -303,12 +301,6 @@ public final class MecanumDrive {
         localizer = new ThreeDeadWheelLocalizer(hardwareMap, PARAMS.inPerTick);
     }
 
-    public double diffyLeftPos(){
-        return diffyLeftEnc.getVoltage()/3.3*(360/355);
-    }
-    public double diffyRightPos(){
-        return diffyRightEnc.getVoltage()/3.3*(360/355);
-    }
 
     public void intakeOn(){
         intake.setPower(0.727);
